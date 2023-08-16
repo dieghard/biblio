@@ -44,10 +44,10 @@ $strSql = "SELECT mov.id,
             $strSql .= " AND mov.periodoMes=" .$mesImpresion;
         }
         if ($anioImpresion>0) {
-            $strSql .= " AND mov.periodoAnio=" .$anioImpresion;
+            $strSql .= " AND mov.periodoAnio={$anioImpresion}";
         }
-        if ($numeroRecibo>0) {
-            $strSql .= " AND mov.id=" .$numeroRecibo;
+    if (strlen($numeroRecibo)>0) {
+            $strSql .= " AND mov.id IN({$numeroRecibo}) ";
         }
         if ($sectorImpresion>0) {
             $strSql .= " AND S.sectorid=" .$sectorImpresion;
@@ -120,54 +120,55 @@ $coneccion = null;
 
 function crear_Recibo($pdf, $lineaX, $lineaY,$data){
     $pdf->SetXY($lineaX, $lineaY);
-    $pdf->Cell(40, 1, utf8_decode('Biblioteca Popular Florentino Ameghino'), 0, 0, 'L');
+    $pdf->Cell(40, 1, 'Biblioteca Popular Florentino Ameghino', 0, 0, 'L');
 
     $pdf->SetFont('Arial','B',6);
 
     $lineaY = $lineaY + 1;
     $pdf->SetXY($lineaX, $lineaY);
-    $pdf->Cell(50, 5, utf8_decode('Rivadavia 10 - Gral. Levalle (Cba)'), 0, 0, 'L');
+    $pdf->Cell(50, 5,'Rivadavia 10 - Gral. Levalle (Cba)', 0, 0, 'L');
 
     $lineaY = $lineaY + 4;
     $pdf->SetXY($lineaX, $lineaY);
-    $pdf->Cell(50, 5, utf8_decode('Tel.03385-480737 CUIT 30-66878313-5'), 0, 0, 'L');
+    $pdf->Cell(50, 5, 'Tel.03385-480737 CUIT 30-66878313-5', 0, 0, 'L');
 
     $pdf->SetFont('Arial', '', 8);
     $lineaY = $lineaY + 4;
     $pdf->SetXY($lineaX, $lineaY);
-    $pdf->Cell(50, 5, utf8_decode('Socio:' . $data['socio']), 0, 0, 'L');
+    $pdf->Cell(50, 5, iconv("UTF-8", "ISO-8859-1//TRANSLIT", 'Socio:' . $data['socio']), 0, 0, 'L');
+
 
     $lineaY = $lineaY + 4;
     $pdf->SetXY($lineaX, $lineaY);
-    $pdf->Cell(50, 5, utf8_decode('N°:Socio:'  . $data['nsocio']), '0', 0, 'L');
+    $pdf->Cell(50, 5, iconv("UTF-8", "ISO-8859-1//TRANSLIT",'N°:Socio:'  . $data['nsocio']), '0', 0, 'L');
 
     //$lineaY   = $lineaY   + 4;
     $pdf->SetXY($lineaX + 24, $lineaY);
-    $pdf->Cell(50, 5, utf8_decode('Tipo:'.$data['tipoSocio']), '0', 0, 'L');
+    $pdf->Cell(50, 5, iconv("UTF-8", "ISO-8859-1//TRANSLIT",'Tipo:'.$data['tipoSocio']), '0', 0, 'L');
 
     $lineaY = $lineaY + 4;
     $pdf->SetXY($lineaX, $lineaY);
-    $pdf->Cell(10, 5, utf8_decode('Dom:' . $data['domicilio']), 0, 0, 'L');
+    $pdf->Cell(10, 5,iconv("UTF-8", "ISO-8859-1//TRANSLIT",'Dom:' . $data['domicilio']), 0, 0, 'L');
 
     //$lineaY   = $lineaY   + 4;
     $pdf->SetXY($lineaX + 34, $lineaY);
-    $pdf->Cell(50, 5, utf8_decode('Sector:' . $data['sector']), '0', 0, 'L');
+    $pdf->Cell(50, 5, iconv("UTF-8", "ISO-8859-1//TRANSLIT",'Sector:' . $data['sector']), '0', 0, 'L');
 
     $lineaY = $lineaY + 4;
     $pdf->SetXY($lineaX, $lineaY);
-    $pdf->Cell(50, 5, utf8_decode('Saldo Anterior:' . $data['saldoAnterior']), 0, 0, 'L');
+    $pdf->Cell(50, 5,iconv("UTF-8", "ISO-8859-1//TRANSLIT",'Saldo Anterior:' . $data['saldoAnterior']), 0, 0, 'L');
 
     $lineaY = $lineaY + 4;
     $pdf->SetXY($lineaX, $lineaY);
-    $pdf->Cell(50, 5, utf8_decode('Periodo:' . $data['periodo']), 0, 0, 'L');
+    $pdf->Cell(50, 5, iconv("UTF-8", "ISO-8859-1//TRANSLIT",'Periodo:' . $data['periodo']), 0, 0, 'L');
 
     $lineaY = $lineaY + 4;
     $pdf->SetXY($lineaX, $lineaY);
-    $pdf->Cell(50, 5, utf8_decode('Saldo Actual:' . $data['saldoActual']), 0, 0, 'L');
+    $pdf->Cell(50, 5, iconv("UTF-8", "ISO-8859-1//TRANSLIT",'Saldo Actual:' . $data['saldoActual']), 0, 0, 'L');
 
     $lineaY = $lineaY + 4;
     $pdf->SetXY($lineaX, $lineaY);
-    $pdf->Cell(50, 5, utf8_decode('Recibi Pesos:'), 0, 0, 'L');
+    $pdf->Cell(50, 5, iconv("UTF-8", "ISO-8859-1//TRANSLIT",'Recibi Pesos:'), 0, 0, 'L');
 
 /*    $lineaY = $lineaY + 4;
     $pdf->SetXY($lineaX, $lineaY);
@@ -175,17 +176,14 @@ function crear_Recibo($pdf, $lineaX, $lineaY,$data){
 */
     $lineaY = $lineaY + 4;
     $pdf->SetXY($lineaX, $lineaY);
-    $pdf->Cell(50, 5, utf8_decode('Fecha:' . $data['fecha']), 0, 0, 'L');
+    $pdf->Cell(50, 5, iconv("UTF-8", "ISO-8859-1//TRANSLIT",'Fecha:' . $data['fecha']), 0, 0, 'L');
 
     $lineaY = $lineaY + 4;
     $pdf->SetXY($lineaX, $lineaY);
-    $pdf->Cell(50, 5, utf8_decode('Recibo N°:' . $data['numeroRecibo']), 0, 0, 'L');
+    $pdf->Cell(50, 5, iconv("UTF-8", "ISO-8859-1//TRANSLIT",'Recibo N°:' . $data['numeroRecibo']), 0, 0, 'L');
 
     $lineaY = $lineaY + 4;
     $pdf->SetXY($lineaX, $lineaY);
-    $pdf->Cell(50, 5, utf8_decode('-------------------------------------------------------------------------------------------------------'), 0, 0, 'L');
+    $pdf->Cell(50, 5,iconv("UTF-8", "ISO-8859-1//TRANSLIT",'-------------------------------------------------------------------------------------------------------'), 0, 0, 'L');
     return $lineaY;
 }
-//============================================================+
-// END OF FILE
-//============================================================+

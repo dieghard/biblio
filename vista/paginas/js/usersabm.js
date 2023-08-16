@@ -14,34 +14,20 @@ $(document).ready(function() {
         SocioNuevo();
     });
     $('#modalUsers2').on('hidden.bs.modal', function (e) {
-          LlenarGrilla();     
+          LlenarGrilla();
     });
-/*
-$('#modalUsers2')
-   .on('hide', function() {
-       console.log('hide');
-   })
-   .on('hidden', function(){
-       console.log('hidden');
-   })
-   .on('show', function() {
-       console.log('show');
-   })
-   .on('shown', function(){
-      console.log('shown' );
-   });
-*/
-   
+
+
    /* //////////////////////////////////////////////////////////////////////////////// */
     $.getScript("paginas/js/combos.js", function( data, textStatus, $xhr){
-            LLenarComboSector(5); 
-            llenarComboLocalidad(7); 
+            LLenarComboSector(5);
+            llenarComboLocalidad(7);
             LLenarComboProvincias(8);
-            LLenarComboTipoSocio(10);   
+            LLenarComboTipoSocio(10);
         });
-       
+
 });
-function AddKeyPress(e) { 
+function AddKeyPress(e) {
         // look for window.event in case event isn't passed in
         e = e || window.event;
         if (e.keyCode == 13) {
@@ -63,7 +49,7 @@ function AddKeyPress(e) {
             var strUrl="ajax/ajaxBuscarDni.php";
             datos.append("documento",dni);
             datos.append("ACTION",'buscarxDni');
-            
+
             $.ajax({
                 url:strUrl,
                 method:"POST",
@@ -77,12 +63,12 @@ function AddKeyPress(e) {
                             if(oRta.encontrado==true){
                                 alert ('Este socio ya se encuentra ingresado:'+ oRta['0'].apellidoyNombre );
                             }
-                            else{$('#btnGuardar').prop('disabled', false);   
-                                    
+                            else{$('#btnGuardar').prop('disabled', false);
+
                                     $('#documento').prop('disabled', true);
                                     $('#apellidoyNombre').prop('disabled', false);
                                     $('#telefono').prop('disabled', false);
-                                    $('#numeroSocio').prop('disabled', false); 
+                                    $('#numeroSocio').prop('disabled', false);
                                     $('#mail').prop('disabled', false);
                                     $('#pass').prop('disabled', false);
                                     $('#cmbSector').prop('disabled', false);
@@ -98,9 +84,9 @@ function AddKeyPress(e) {
                         }
                         else{
                             $('#cartel').html(oRta.mensaje);
-                        }                              
-                      
-                }         
+                        }
+
+                }
         });
             return false;
         }
@@ -111,7 +97,7 @@ function fnProcesaEditar(x){
     var bibliotecaid= $(x).closest('tr').data('bibliotecaid');
     var blibioteca= $(x).closest('tr').data('blibioteca');
     var numeroSocio= $(x).closest('tr').data('numerosocio');
-    console.log('numeroSocio:'+numeroSocio);
+
     var apellidoyNombre= $(x).closest('tr').data('apellidoynombre');
     var telefono= $(x).closest('tr').data('telefono');
     var mail= $(x).closest('tr').data('mail');
@@ -131,30 +117,30 @@ function fnProcesaEditar(x){
     var rol= $(x).closest('tr').data('rol');
     var pagaCuota= $(x).closest('tr').data('pagacuota');
     var valorCuota= $(x).closest('tr').data('valorcuota');
-   
-    
+
+
    // alert ('rol:'+rol);
-    
-   
+
+
     $("#id").val(id);
     $('#documento').val(documento);
-    
+
     $("#apellidoyNombre").val(apellidoyNombre);
     $("#telefono").val(telefono);
-    
+
     $("#mail").val(mail);
     $("#pass").val(pass);
     $("#domicilio").val(domicilio);
     $("#documento").val(documento);
     $("#numeroSocio").val(numeroSocio);
-    
+
     $('#documento').prop('disabled', true);
     $('#apellidoyNombre').prop('disabled', false);
     $('#numeroSocio').prop('disabled', false);
     $('#mail').prop('disabled', false);
     $('#pass').prop('disabled', false);
     $('#cmbSector').prop('disabled', false);
-    
+
     $('#domicilio').prop('disabled', false);
     $('#cmbLocalidad').prop('disabled', false);
     $('#cmbProvincia').prop('disabled', false);
@@ -162,43 +148,43 @@ function fnProcesaEditar(x){
     $('#cmbTipoSocio').prop('disabled', false);
     $('#cmbRol').prop('disabled', false);
     $('#cmbPagaCuota').prop('disabled', false);
-    
+
     /*COMBOS */
-       
-        $('#cmbActivo').val(activo); 
+
+        $('#cmbActivo').val(activo);
         $('#cmbActivo').trigger('change'); // Notify any JS components that the value changed
-    
-        
-        $('#cmbPagaCuota').val(pagaCuota); 
+
+
+        $('#cmbPagaCuota').val(pagaCuota);
         $('#cmbPagaCuota').trigger('change'); // Notify any JS components that the value changed
-        
-        $('#cmbLocalidad').val(localidadid); 
+
+        $('#cmbLocalidad').val(localidadid);
         $('#cmbLocalidad').trigger('change'); // Notify any JS components that the value changed
-    
-        $('#cmbProvincia').val(provinciaid); 
+
+        $('#cmbProvincia').val(provinciaid);
         $('#cmbProvincia').trigger('change'); // Notify any JS components that the value changed
 
-        $('#cmbSector').val(sectorid); 
+        $('#cmbSector').val(sectorid);
         $('#cmbSector').trigger('change'); // Notify any JS components that the value changed
-    
-        $('#cmbTipoSocio').val(tipoSocioId); 
+
+        $('#cmbTipoSocio').val(tipoSocioId);
         $('#cmbTipoSocio').trigger('change'); // Notify any JS components that the value changed
-        
-        $('#cmbRol').val(rol); 
+
+        $('#cmbRol').val(rol);
         $('#cmbRol').trigger('change'); // Notify any JS components that the value changed
 
         $("#modalUsers2").modal("show");
-    
-    
+
+
 }
 function LlenarGrilla(){
     nombre = $('#user').val();
-   
+
     var strUrl="ajax/ajaxabmUsers.php";
     var datos = new FormData();
     datos.append("bibliotecaID","llenarGrilla");
     datos.append("ACTION","llenarGrilla");
-    $('#tabla').html('<div class="loading"><h7>Aguarde Un momento, por favor...</h7><img src="../vista/images/save.gif"  width="50" height="50" alt="loading"/></div>'); 
+    $('#tabla').html('<div class="loading"><h7>Aguarde Un momento, por favor...</h7><img src="../vista/images/save.gif"  width="50" height="50" alt="loading"/></div>');
     $('#idTablaUser').html('');
     $.ajax({
             url:strUrl,
@@ -208,13 +194,13 @@ function LlenarGrilla(){
                 contentType:false,
                 processData :false,
                 success:function(respuesta){
-                   
+
                         var oRta  = JSON.parse(respuesta);
-                        console.log(oRta);
+
                         if (oRta.success ==true ){
                             $('#tabla').html(oRta.tabla);
                             //TRADUCCION DE LA GRILLA DE MAESTRO SECTOR!!!
-                             
+
                             $('#idTablaUser').DataTable( {
                                     "language": {
                                         "lengthMenu": "Mostrando _MENU_ registros por página",
@@ -234,13 +220,13 @@ function LlenarGrilla(){
                         }
                         else{
                             $('#cartel').html(oRta.mensaje);
-                        } 
-                }         
+                        }
+                }
         });
 
 }
 function SocioNuevo(){
-    
+
     $("#id").val('0');
     $('#documento').val('');
     $('#numeroSocio').val('');
@@ -275,8 +261,8 @@ function SocioNuevo(){
 
     $("#modalUsers2").modal("show");
 
-    $('#btnGuardar').prop('disabled', true);   
-} 
+    $('#btnGuardar').prop('disabled', true);
+}
 
 function PasarDatosSocio(){
     var socio ={
@@ -301,56 +287,56 @@ function PasarDatosSocio(){
 }
 function Validar(socio){
         blnContinuar=true;
-        
+
         if (socio.nombre!= null && socio.nombre.length <=0 ){
             socio.mensaje = socio.mensaje + 'Debe ingresar un apellido y nombre</br>';
             socio.seguir = false;
-            blnContinuar=false;   
+            blnContinuar=false;
         }
-        
+
 
         if ( socio.mail!= null &&  socio.mail.length<=0 ){
             socio.mensaje = socio.mensaje +  'Debe ingresar un mail</br>';
             socio.seguir = false;
-            blnContinuar=false;   
+            blnContinuar=false;
         }
         if ( socio.pass!= null  && socio.pass.length<=0 ){
             socio.mensaje = socio.mensaje + 'Debe ingresar un pass</br>';
             socio.seguir = false;
-            blnContinuar=false;   
+            blnContinuar=false;
         }
         if (  socio.sectorID!= null && socio.sectorID.length<=0 ){
             socio.mensaje = socio.mensaje + 'Debe ingresar un sector</br>';
             socio.seguir = false;
-            blnContinuar=false;   
+            blnContinuar=false;
         }
         if (   socio.domicilio!= null &&  socio.domicilio.length<=0 ){
             socio.mensaje = socio.mensaje + 'Debe ingresar un domicilio</br>';
             socio.seguir = false;
-            blnContinuar=false;   
+            blnContinuar=false;
         }
         if ( socio.localidadID!= null &&  socio.localidadID.length<=0 ){
             socio.mensaje = socio.mensaje + 'Debe ingresar una localidad</br>';
             socio.seguir = false;
-            blnContinuar=false;   
+            blnContinuar=false;
         }
         if (socio.provinciaID!= null &&  socio.provinciaID.length<=0 ){
             socio.mensaje = socio.mensaje + 'Debe ingresar una provincia</br>';
             socio.seguir = false;
-            blnContinuar=false;   
+            blnContinuar=false;
         }
         if (socio.tipoSocioID!= null &&   socio.tipoSocioID.length<=0 ){
             socio.mensaje = socio.mensaje +  'Debe ingresar un tipo de socio</br>';
             socio.seguir = false;
-            blnContinuar=false;   
+            blnContinuar=false;
         }
         if ( socio.pagaCuota!= null &&   socio.pagaCuota.length<=0 ){
             socio.mensaje = socio.mensaje + 'Debe seleccionar si paga cuota</br>';
             socio.seguir = false;
-            blnContinuar=false;   
+            blnContinuar=false;
         }
-         
-        
+
+
     return socio;
 }
 function Guardar_Datos(){
@@ -358,11 +344,11 @@ function Guardar_Datos(){
         var socio =PasarDatosSocio();
         ///Valido los datos del socio
         socio = Validar(socio);
-    
+
         if (socio.seguir==false){
             $('#error').html('<div class="alert alert-danger alert-dismissible fade show" role="alert"><strong>Se econtraron errores!</strong></br>'+ socio['mensaje']+'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
         return false;
-        }   
+        }
         ///SI PASA LO STRINGIFICO
         var titulo ='Guardar el nuevo socio '  + socio.nombre;
         var content ='¿Guardar el nuevo socio '  + socio.nombre + ' ?';
@@ -370,7 +356,7 @@ function Guardar_Datos(){
             var titulo ='Guardar modificaciones  del socio ' + socio.nombre  ;
             var content ='¿Guardar modificaciones del socio?' + socio.nombre  ;
         }
-    
+
         $.confirm({
                 theme: 'Modern',
                 title: titulo ,
@@ -387,15 +373,15 @@ function Guardar_Datos(){
                     }
                 }
             });
-        
-    
+
+
 }
 function GuardarSocio(socio){
         var oSocio = JSON.stringify(socio);
         var datos = new FormData();
         datos.append("ACTION",'ingresoSocio');
         datos.append("datosjson",oSocio);
-        ////LO PASO CON FORM DATA    
+        ////LO PASO CON FORM DATA
         var strUrl="ajax/ajaxabmUsers.php";
         $.ajax({
                 url:strUrl,
@@ -406,25 +392,25 @@ function GuardarSocio(socio){
                 contentType:false,
                 processData :false,
                 success:function(respuesta){
-                            var oRta  = JSON.parse(respuesta);    
+                            var oRta  = JSON.parse(respuesta);
                             if (oRta.success==true){
                                 $('#modalUsers2').modal('toggle');
-                                LlenarGrilla();                    
+                                LlenarGrilla();
                             }
                             else{
                                 alert (oRta.mensaje);
                             }
-                }  
-        });   
+                }
+        });
 }
 ///Eliminar Socio
 function fnProcesaEliminar(x){
     var id= $(x).closest('tr').data('id');
     ////CREO EL OBJETO
     var  socio ={id: id} ;
-    
-    
-    
+
+
+
     $.confirm({
                 theme: 'Modern',
                 title: 'ELIMINACIÓN SOCIO',
@@ -441,7 +427,7 @@ function fnProcesaEliminar(x){
                     }
                 }
             });
-        
+
 }
 function EliminarSocio(socio){
     ///SI PASA LO STRINGIFICO
@@ -449,7 +435,7 @@ function EliminarSocio(socio){
         var datos = new FormData();
         datos.append("ACTION",'eliminarSocio');
         datos.append("datosjson",oSocio);
-        ////LO PASO CON FORM DATA    
+        ////LO PASO CON FORM DATA
         var strUrl="ajax/ajaxabmUsers.php";
         $.ajax({
                 url:strUrl,
@@ -460,18 +446,18 @@ function EliminarSocio(socio){
                 contentType:false,
                 processData :false,
                 success:function(respuesta){
-                            var oRta  = JSON.parse(respuesta);    
+                            var oRta  = JSON.parse(respuesta);
                             if (oRta.success==true){
-                                
-                                LlenarGrilla();                    
+
+                                LlenarGrilla();
                             }
                             else{
                                 alert (oRta.mensaje);
                             }
-                }  
+                }
         });
 
 }
 
-   
+
 

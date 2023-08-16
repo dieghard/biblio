@@ -22,7 +22,7 @@ class ModeloEmisionDeRecibos
             FROM movimientos mov
             INNER join socios S on S.id = mov.socioId
             WHERE IFNULL(mov.Eliminado,'NO')='NO'   ";
-        if  ($data['socioID']>0){ $sql .= "  AND mov.SocioId=".$data['socioID'];}
+        if  ($data['socioID'] >0){ $sql .= "  AND mov.SocioId=".$data['socioID'];}
         if  ($data['mesDesde']>0){$sql .= "  AND mov.periodoMes>=".$data['mesDesde'];}
         if  ($data['anioDesde']>0){$sql .= "  AND mov.periodoAnio>=".$data['anioDesde'];}
         if  ($data['mesHasta']>0){$sql .= "  AND mov.periodoMes<=".$data['mesHasta'];}
@@ -30,7 +30,7 @@ class ModeloEmisionDeRecibos
 
         return $sql;
     }
-    public function LlenarGrilla($bibliotecaID,$data)
+    public function LlenarGrilla($bibliotecaID,&$data)
     {
         $Coneccion = new Conexion();
         $dbConectado = $Coneccion->DBConect();
@@ -40,12 +40,18 @@ class ModeloEmisionDeRecibos
         $superArray['tabla'] = '';
         $bibliotecalID = $bibliotecaID;
 
+        if ($data['socioID'] == 'undefined') :
+          $data['socioID'] = 0 ;
+        endif;
+
         $strSql = $this->armarSqlSelect($data);
         $strSql .= '    AND  mov.bibliotecaId=:bibliotecaID
                         ORDER by mov.id DESC  , mov.NumeroReciboPagado,S.apellidoyNombre
                         LIMIT 2000';
         $tabla = '';
-        $superArray['sql']=$strSql;
+        $superArray['sql'] = $strSql;
+        $superArray['SocioID'] = $data['socioID'];
+
         try {
             $stmt = $dbConectado->prepare($strSql);
             $stmt->bindParam(':bibliotecaID', $bibliotecalID, PDO::PARAM_INT);
@@ -70,7 +76,6 @@ class ModeloEmisionDeRecibos
                 <tbody>';
 
             if ($registro) {
-                /* obtener los valores */
                 foreach ($registro  as $row) {
                     $encabezadoRow = '<tr id="movimientoid-'.$row['id'].'"';
                     $encabezadoRow .= 'data-id="'.$row['id'].'"';
@@ -105,6 +110,8 @@ class ModeloEmisionDeRecibos
             $trace = $e->getTrace();
             $superArray['mensaje'] = $e->getMessage().' en '.$e->getFile().' en la linea '.$e->getLine().' llamado desde '.$trace[0]['file'].' on line '.$trace[0]['line'];
         }
+
+
         $superArray['tabla'] = $tabla;
 
         $Coneccion = null;

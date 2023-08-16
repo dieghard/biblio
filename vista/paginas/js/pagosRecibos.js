@@ -285,7 +285,7 @@ function GuardarPago(emision) {
         processData: false,
         success: function(respuesta) {
             var oRta = JSON.parse(respuesta);
-            console.log(oRta);
+
             if (oRta.success == true) {
                 $('#error').html('');
 

@@ -124,19 +124,6 @@
                 </div>
 
 
-               <!--
-                <div class="form-group">
-                    <div class="input-group-lg">
-
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">SOCIO:</span>
-                        </div>
-
-                        <div id="divcomboSociosabm"></div>
-
-                    </div>
-                </div>-->  <!-- Se llena mediante ajax -->
-
                 <div class="form-group">
                     <div class="input-group">
                         <div class="input-group-prepend">

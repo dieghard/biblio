@@ -19,7 +19,6 @@ if (!isset($_SESSION['usuario'])) {
       $pagina = $_GET['controlador'];
   } else {
       $newURL = '../index.php';
-      //        header('Location: '.$newURL);
 
   }
 
