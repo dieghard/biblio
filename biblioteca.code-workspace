@@ -9,6 +9,23 @@
 		"jshint.enable": false,
 		"standard.enable": false,
 		"tslint.enable": false,
-		"jscs.enable": false
+		"jscs.enable": false,
+		"cSpell.words": [
+			"biblio",
+			"controlador",
+			"controlador login",
+			"enlaces",
+			"enlaces paginas modelo",
+			"interaccion",
+			"llamamos",
+			"login",
+			"logora",
+			"modelo",
+			"modelo plantilla",
+			"paginas",
+			"plantilla",
+			"respuesta",
+			"usuario"
+		]
 	}
 }

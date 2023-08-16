@@ -13,9 +13,8 @@ class ControladorLogin{
 	Interaccion del Usuario
 	=============================================*/
 	public function enlacesPaginasController(){
-		
-                $MP = new ModeloPlantilla();
-		
+		$MP = new ModeloPlantilla();
+
 		if (isset ($_GET["action"])) {
 			$enlaces = $_GET["action"];
 		} else{

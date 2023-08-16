@@ -16,7 +16,7 @@ $(document).ready(function() {
 
       /* //////////////////////////////////////////////////////////////////////////////// */
     $.getScript("paginas/js/combos.js", function( data, textStatus, $xhr){
-        LLenarComboSector(5); 
+        LLenarComboSector(5);
     });
     $("#btnCerrar").on( "click", function() {});
     $("#btnCerrarAbajo").on( "click", function() {});
@@ -39,7 +39,7 @@ $(document).ready(function() {
         Impresion_de_todos_los_recibos();
     });
     $('#modalEmisionRecibosAbm').on('hidden.bs.modal', function (e) {
-          LlenarGrilla();     
+          LlenarGrilla();
     });
     var theDate= new Date();
     var currMonth = theDate.getMonth();
@@ -47,7 +47,7 @@ $(document).ready(function() {
     $("#mesHasta").val(currMonth + 1);
     /// COMBO cmbSocio
     $('#cmbSocio').on('select2:select', function(e) {
-        
+
         LlenarGrilla();
     });
     $("#periodoMes").change(function(){
@@ -102,19 +102,13 @@ function Impresion_de_todos_los_recibos(){
     var anioImpresion = $('#periodoAnioImpresion').val();
     var numeroReciboImpresion = $('#numeroReciboImpresion').val();
     var sectorImpresion = $('#cmbSector').val();
-    if (mesImpresion==null){
-        mesImpresion=0;
-    }
-    if (mesImpresion==''){
-        mesImpresion=0;
-    }
+    if (mesImpresion==null){  mesImpresion=0;}
+    if (mesImpresion==''){        mesImpresion=0;}
 
-    if (anioImpresion==null){
-        anioImpresion=0;
-    }
+    if (anioImpresion==null){anioImpresion=0;}
 
     var strUrl="paginas/recibos/impresionrecibos.php";
-    $('#tabla').html('<div class="loading"><h7>Aguarde Un momento, por favor...</h7><img src="../vista/images/save.gif"  width="50" height="50" alt="loading"/></div>'); 
+    $('#tabla').html('<div class="loading"><h7>Aguarde Un momento, por favor...</h7><img src="../vista/images/save.gif"  width="50" height="50" alt="loading"/></div>');
     $('#idTablaUser').html('');
     document.location.href = strUrl + "?ACTION=impresionRecibos&socioID=" + socioID + "&mesImpresion=" + mesImpresion +"&anioImpresion=" + anioImpresion+ "&numeroReciboImpresion=" +numeroReciboImpresion + "&sectorImpresion=" + sectorImpresion ;
 }
@@ -127,14 +121,14 @@ function LlenarGrilla(){
     var anioHasta = $('#anioHastaFiltro').val();
     var strUrl="ajax/ajaxEmisionRecibos.php";
     var datos = new FormData();
-   
+
     datos.append("socioID",socioID);
     datos.append("mesDesde",mesDesde);
     datos.append("anioDesde",anioDesde);
     datos.append("mesHasta",mesHasta);
     datos.append("anioHasta",anioHasta);
     datos.append("ACTION","llenarGrilla");
-    $('#tabla').html('<div class="loading"><h7>Aguarde Un momento, por favor...</h7><img src="../vista/images/save.gif"  width="50" height="50" alt="loading"/></div>'); 
+    $('#tabla').html('<div class="loading"><h7>Aguarde Un momento, por favor...</h7><img src="../vista/images/save.gif"  width="50" height="50" alt="loading"/></div>');
     $('#idTablaUser').html('');
     $.ajax({
             url:strUrl,
@@ -154,6 +148,10 @@ function LlenarGrilla(){
                                 buttons: [
                                    'excel'
                                 ],
+                                order: [[1, 'asc']],
+                                rowGroup: {
+                                            dataSrc: 1
+                                        },
                                     "language": {
                                         "lengthMenu": "Mostrando _MENU_ registros por página",
                                         "zeroRecords": "Nada para Mostrar",
@@ -172,15 +170,15 @@ function LlenarGrilla(){
                         }
                         else{
                             $('#cartel').html(oRta.mensaje);
-                        } 
-                }         
+                        }
+                }
         });
 
 }
 function ReciboNuevo(){
     var now = new Date();
     //var today = now.getDate()  + '/' + (now.getMonth() + 1) + '/' + now.getFullYear();
-
+    LLenarComboSocios_abm(4);
     $("#id").val('0');
     $('#fecha').val( diadeHoy() );
     $('#periodoMes').val( now.getMonth() + 1);
@@ -190,8 +188,6 @@ function ReciboNuevo(){
     //$('#socios_abm option:eq(0)').prop('selected',true)
     $('#socios_abm').val(0).trigger('change.select2');
     //$('#socios_abm').val(0);
-
-    console.log($('#socios_abm').val());
 
     $('#observaciones').val('');
     $('#observaciosnes').val('');
@@ -204,19 +200,20 @@ function imprimirRecibos(){
 }
 function PasarDatosEmision(){
     var socioID = $('#socios_abm').val();
-    if (socioID==''){
-        socioID =0;
-    }
+    var monto =   $('#monto').val();
+    if (socioID==''){ socioID =0; }
+    if (monto==''){ monto =0;}
 
     var emision ={
-                   
+
                     fecha : $('#fecha').val(),
                     periodoMes : $('#periodoMes').val(),
                     periodoAnio : $('#periodoAnio').val(),
                     socioId: socioID,
                     observaciones: $('#observaciones').val(),
                     seguir: true,
-                    mensaje: ''};
+                    mensaje: '',
+                    monto:monto};
     return emision;
 }
 function Validar(emision){
@@ -230,14 +227,14 @@ function Validar(emision){
         if ( emision.periodoMes!= null &&  emision.periodoMes.length<=0 ){
             emision.mensaje = emision.mensaje +  'Debe ingresar un mes</br>';
             emision.seguir = false;
-            blnContinuar=false;   
+            blnContinuar=false;
         }
         if ( emision.periodoAnio!= null  && emision.periodoAnio<=0 ){
             emision.mensaje = emision.mensaje + 'Debe ingresar un año</br>';
             emision.seguir = false;
-            blnContinuar=false;   
+            blnContinuar=false;
         }
-         
+
     return emision;
 }
 function Guardar_Datos(){
@@ -310,9 +307,9 @@ function fnProcesaEliminar(x){
     var id= $(x).closest('tr').data('id');
     ////CREO EL OBJETO
     var  socio ={id: id} ;
-    
-    
-    
+
+
+
     $.confirm({
                 theme: 'Modern',
                 title: 'ELIMINACIÓN SOCIO',
@@ -329,7 +326,7 @@ function fnProcesaEliminar(x){
                     }
                 }
             });
-        
+
 }
 function EliminarRecibo(Recibo){
     ///SI PASA LO STRINGIFICO
@@ -337,7 +334,7 @@ function EliminarRecibo(Recibo){
         var datos = new FormData();
         datos.append("ACTION",'eliminarSocio');
         datos.append("datosjson",oRecibo);
-        ////LO PASO CON FORM DATA    
+        ////LO PASO CON FORM DATA
         var strUrl="ajax/ajaxabmUsers.php";
         $.ajax({
                 url:strUrl,
@@ -347,15 +344,15 @@ function EliminarRecibo(Recibo){
                 cache:false,
                 processData :false,
                 success:function(respuesta){
-                            var oRta  = JSON.parse(respuesta);    
+                            var oRta  = JSON.parse(respuesta);
                             if (oRta.success==true){
-                                
-                                LlenarGrilla();                    
+
+                                LlenarGrilla();
                             }
                             else{
                                 alert (oRta.mensaje);
                             }
-                }  
+                }
         });
 
 }
@@ -366,6 +363,7 @@ function LLenarComboSocios_abm(tabIndex){
     datos.append("tabIndex",tabIndex);
     datos.append("combo","socios_abm");
     datos.append("idCombo","socios_abm");
+
 
      $.ajax({
             url:strUrl,
@@ -379,11 +377,14 @@ function LLenarComboSocios_abm(tabIndex){
                         var oRta  = JSON.parse(respuesta);
 
                         if (oRta.success ==true ){
-                            $('#comboSociosabm').html(oRta.combo);
-                            $('#socios_abm').select2();
-                            $('#comboSociosabmEmision').html(oRta.combo);
-                            $('#cmbSocioAbm').select2();
+                            console.log(oRta.combo);
 
+                            $('#divcomboSociosabm').html(oRta.combo);
+                            $('#socios_abm').select2();
+                            $("#socios_abm").removeAttr('disabled');
+                            $('socios_abm').select2("enable", false);
+
+                            LLenarComboSocios_Impresion(4);
                         }else
                         {
                             $('#cartel').html(oRta.mensaje);
@@ -409,10 +410,10 @@ function LLenarComboSocios_filtro(tabIndex){
                 success:function(respuesta){
                         //alert(respuesta);
                         var oRta  = JSON.parse(respuesta);
-                        if (oRta.success ==true ){    
+                        if (oRta.success ==true ){
                             $('#comboSocios').html(oRta.combo);
                             if ($("#comboSocios").length > 0){
-                                $('#comboSociosfiltro').select2();    
+                                $('#comboSociosfiltro').select2();
                             }
                         }else
                         {

@@ -31,7 +31,7 @@ $strSql = "SELECT mov.id,
                 mov.socioId,
                 mov.debe,
                 mov.haber,
-                (select saldo from movimientos where socioId = mov.socioId order by id DESC  limit 1)  as saldo  
+                (select saldo from movimientos where socioId = mov.socioId order by id DESC  limit 1)  as saldo
             FROM movimientos mov
             INNER join socios S on S.id = mov.socioId
             INNER join tiposocio tS on tS.id = S.tipoSocioId
@@ -86,9 +86,9 @@ try {
               $data['tipoSocio']=$row['tipoSocio'];
               $data['domicilio']=$row['domicilio'];
               $data['sector']=$row['sector'];
-              $data['saldoAnterior']='0';
+              $data['saldoAnterior']=$row['saldo'];
               $data['periodo']=$row['periodoMes'] . '/' . $row['periodoAnio'] ;
-              $data['saldoActual']=$row['saldo'];
+              $data['saldoActual']=$row['debe'];
               $data['fecha']=$row['fecha'];
               $data['numeroRecibo']=$row['id'];
               //impresion

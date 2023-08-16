@@ -16,7 +16,7 @@ class ModeloCombos
         $superArray['mensaje'] = '';
         $superArray['combo'] = '';
         header('Content-Type: text/html;charset=utf-8');
-        $strSql = 'SELECT id, descripcion 
+        $strSql = 'SELECT id, descripcion
                 FROM localidades
                 ORDER BY descripcion';
         try {
@@ -50,7 +50,7 @@ class ModeloCombos
         $superArray['mensaje'] = '';
         $superArray['combo'] = '';
         header('Content-Type: text/html;charset=utf-8');
-        $strSql = 'SELECT id, descripcion	 
+        $strSql = 'SELECT id, descripcion
                 FROM provincias
                 ORDER BY descripcion';
         try {
@@ -88,7 +88,7 @@ class ModeloCombos
         }
         $usuario = $_SESSION['usuario'];
         header('Content-Type: text/html;charset=utf-8');
-        $strSql = 'SELECT id, descripcion	 
+        $strSql = 'SELECT id, descripcion
                 FROM sector
                 Where bibliotecaId='.$usuario['bibliotecaID'].'  ORDER BY descripcion';
         try {
@@ -129,7 +129,7 @@ class ModeloCombos
         }
         $usuario = $_SESSION['usuario'];
         header('Content-Type: text/html;charset=utf-8');
-        $strSql = 'SELECT id, descripcion	, valorCuota 
+        $strSql = 'SELECT id, descripcion	, valorCuota
                 FROM tiposocio
                 Where bibliotecaId='.$usuario['bibliotecaID'].'  ORDER BY descripcion';
         try {
@@ -213,7 +213,7 @@ class ModeloCombos
         }
         $usuario = $_SESSION['usuario'];
         header('Content-Type: text/html;charset=utf-8');
-        $strSql = "SELECT s.id, s.apellidoyNombre, ts.valorCuota 
+        $strSql = "SELECT s.id, s.apellidoyNombre, ts.valorCuota
                 FROM socios s
                 inner join tiposocio ts on ts.id = s.tipoSocioId
                 Where activo='SI' AND bilbiotecaId=".$usuario['bibliotecaID'].'  ORDER BY apellidoyNombre';
@@ -255,7 +255,7 @@ class ModeloCombos
         }
         $usuario = $_SESSION['usuario'];
         header('Content-Type: text/html;charset=utf-8');
-        $strSql = "SELECT s.id, s.apellidoyNombre, ts.valorCuota 
+        $strSql = "SELECT s.id, s.apellidoyNombre, ts.valorCuota
                 FROM socios s
                 inner join tiposocio ts on ts.id = s.tipoSocioId
                 Where activo='SI' AND bilbiotecaId=".$usuario['bibliotecaID'].'  ORDER BY apellidoyNombre';
@@ -264,11 +264,12 @@ class ModeloCombos
             $stmt = $dbConectado->prepare($strSql);
             $stmt->execute();
             $registro = $stmt->fetchAll();
-            $combo = '<select id="'.$idCombo.'" style="width:100%;" tabindex="'.$tabIndex.'"><option value=0>Seleccione Socio </option>';
+            $combo = '<select id="'.$idCombo.'" style="width:100%;" data-placeholder="Seleccione un socio" ><option value=0>Seleccione Socio </option>';
+
             if ($registro) {
                 /* obtener los valores */
                 foreach ($registro  as $row) {
-                    $combo .= '<option value='.$row['id'].'>'.$row['apellidoyNombre'].'-(Valor Cuota:$'.$row['valorCuota'].')</option>';
+                    $combo .= '<option value='.$row["id"].'>'.$row["apellidoyNombre"].'-(Valor Cuota:$'.$row["valorCuota"].')</option>';
                 }
             }
             $combo .= '</select>';

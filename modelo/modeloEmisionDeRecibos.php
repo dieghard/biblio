@@ -17,28 +17,19 @@ class ModeloEmisionDeRecibos
                 mov.socioId,
                 mov.debe,
                 mov.haber,
-                mov.saldo
+                mov.saldo,
+                mov.Observaciones
             FROM movimientos mov
             INNER join socios S on S.id = mov.socioId
             WHERE IFNULL(mov.Eliminado,'NO')='NO'   ";
-        if  ($data['socioID']>0){
-            $sql .= "  AND mov.SocioId=".$data['socioID'];
-        }
-        if  ($data['mesDesde']>0){
-            $sql .= "  AND mov.periodoMes>=".$data['mesDesde'];
-        }
-        if  ($data['anioDesde']>0){
-            $sql .= "  AND mov.periodoAnio>=".$data['anioDesde'];
-        }
-        if  ($data['mesHasta']>0){
-            $sql .= "  AND mov.periodoMes<=".$data['mesHasta'];
-        }
-        if  ($data['anioHasta']>0){
-            $sql .= "  AND mov.periodoAnio<=".$data['anioHasta'];
-    }
-    return $sql;
-    }
+        if  ($data['socioID']>0){ $sql .= "  AND mov.SocioId=".$data['socioID'];}
+        if  ($data['mesDesde']>0){$sql .= "  AND mov.periodoMes>=".$data['mesDesde'];}
+        if  ($data['anioDesde']>0){$sql .= "  AND mov.periodoAnio>=".$data['anioDesde'];}
+        if  ($data['mesHasta']>0){$sql .= "  AND mov.periodoMes<=".$data['mesHasta'];}
+        if  ($data['anioHasta']>0){$sql .= "  AND mov.periodoAnio<=".$data['anioHasta'];}
 
+        return $sql;
+    }
     public function LlenarGrilla($bibliotecaID,$data)
     {
         $Coneccion = new Conexion();
@@ -51,7 +42,7 @@ class ModeloEmisionDeRecibos
 
         $strSql = $this->armarSqlSelect($data);
         $strSql .= '    AND  mov.bibliotecaId=:bibliotecaID
-                        ORDER by mov.id DESC , S.apellidoyNombre
+                        ORDER by mov.id DESC  , mov.NumeroReciboPagado,S.apellidoyNombre
                         LIMIT 2000';
         $tabla = '';
         $superArray['sql']=$strSql;
@@ -67,12 +58,13 @@ class ModeloEmisionDeRecibos
                             <th scope="col">Nº RECIBO</th>
                             <th scope="col">SOCIO</th>
                             <th scope="col">Rec./Cob.</th>
-                            <th scope="col">FECHA</th> 
+                            <th scope="col">FECHA</th>
                             <th scope="col">PERIODO</th>
                             <th scope="col">Nº RECIBO PAGADO</th>
                             <th scope="col">DEBE</th>
                             <th scope="col">HABER</th>
                             <th scope="col">SALDO</th>
+                            <th scope="col">OBS.</th>
                         </tr>
                     </thead>
                 <tbody>';
@@ -100,10 +92,11 @@ class ModeloEmisionDeRecibos
                     $tabla .= '<td>$'.$row['debe'].'</td>';
                     $tabla .= '<td>$'.$row['haber'].'</td>';
                     $tabla .= '<td>$'.$row['saldo'].'</td>';
+                    $tabla .= '<td>'.$row['Observaciones'].'</td>';
                     $tabla .= '</tr>'; //nueva fila
                 }
             }
-            $tabla .= '</tbody> 
+            $tabla .= '</tbody>
                         </table>
                         </div>';
         } catch (Throwable $e) {
@@ -118,32 +111,54 @@ class ModeloEmisionDeRecibos
 
         return json_encode($superArray);
     }
-
     private function ArmarSqlInsert($bibliotecaID, $data)
     {
-        $laFecha = ($data->fecha);
-        $strSql = 'INSERT INTO  MOVIMIENTOS (bibliotecaId,ReciboCobro,Fecha,periodoMes,periodoAnio,socioId,debe,saldo)
-                     SELECT 
-                        '.$bibliotecaID.",
-                        'recibo',
-                        '$laFecha',
-                        $data->periodoMes,$data->periodoAnio,
-                        S.id,
-                        ts.valorCuota, 
-                        IFNULL((select (saldo) from movimientos where socioId =s.id order by id DESC  limit 1),0)  + ts.valorCuota as saldo
-                        FROM socios S 
-                        INNER JOIN tiposocio ts on ts.id = s.tipoSocioId
-                        WHERE s.activo='SI' 
-                        AND S.pagaCuota='SI'
-                        AND S.id NOT IN (select socioid from movimientos where periodoMes=".$data->periodoMes.'  AND periodoAnio='.$data->periodoAnio." AND ReciboCobro='recibo')
-                        ";
-        if ($data->socioId > 0) {
-            $strSql .= '  AND S.id='.$data->socioId;
+        $laFecha = "'". ($data->fecha) ."'" ;
+
+        $strSql = ' INSERT INTO  MOVIMIENTOS (bibliotecaId,ReciboCobro,Fecha,periodoMes,periodoAnio,socioId,observaciones,debe,saldo) ';
+        $strSql .=' SELECT ';
+        $strSql .= $bibliotecaID.", ";
+        $strSql .= "'recibo', ";
+        $strSql .= $laFecha.',';
+        $strSql .= $data->periodoMes.', ';
+        $strSql .= $data->periodoAnio.', ';
+        $strSql .= ' S.id, ';
+        $strSql .= "'". $data->observaciones ."'," ;
+
+        if ($data->monto>0){
+            $strSql .= $data->monto .', ';
+        }else{
+            $strSql .= ' ts.valorCuota, ';
         }
+
+        $strSql .= ' IFNULL((select (saldo)
+                            from movimientos
+                            where socioId =s.id
+                            order by id DESC  limit 1),0)  + ';
+        if ($data->monto>0){
+            $strSql .= $data->monto ;
+        }else{
+             $strSql .= ' ts.valorCuota ';
+        }
+        $strSql .= ' as saldo ';
+        $strSql .= ' FROM socios S';
+
+        if ($data->monto==0){
+            $strSql .= ' INNER JOIN tiposocio ts on ts.id = s.tipoSocioId ' ;
+        }
+
+        $strSql .= ' WHERE s.activo="SI" ';
+        $strSql .= ' AND S.pagaCuota="SI" ';
+        if ($data->monto=0){
+            $strSql .= ' AND S.id NOT IN (select socioid from movimientos ' ;
+            $strSql .= '                   where periodoMes='.$data->periodoMes;
+            $strSql .='                     AND periodoAnio='.$data->periodoAnio;
+            $strSql .="                     AND ReciboCobro='recibo') ";
+        }
+        if ($data->socioId > 0) { $strSql .= '  AND S.id='.$data->socioId; }
 
         return $strSql;
     }
-
     public function IngresoEmisionRecibos($bibliotecaID, $data)
     {
         /* ACA INSERTAMOS LOS DATOS!!!! */
@@ -180,7 +195,6 @@ class ModeloEmisionDeRecibos
 
         return json_encode($superArray);
     }
-
     /*--------------------------------------------------------------------------------------------- */
     private function armarSqlInsert_Pagos($bibliotecaID, $data)
     {
@@ -190,7 +204,6 @@ class ModeloEmisionDeRecibos
 
         return $strSql;
     }
-
     private function obtenerElUltimoSaldo($bibliotecaID, $data)
     {
         $coneccion = new Conexion();
@@ -223,7 +236,6 @@ class ModeloEmisionDeRecibos
 
         return $saldo;
     }
-
     public function ingresoEmisionPagos($bibliotecaID, $data)
     {
         /* ACA INSERTAMOS LOS DATOS!!!! */

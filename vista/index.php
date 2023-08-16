@@ -20,7 +20,7 @@ if (!isset($_SESSION['usuario'])) {
   } else {
       $newURL = '../index.php';
       //        header('Location: '.$newURL);
-      
+
   }
 
 ?>
@@ -159,7 +159,7 @@ if (!isset($_SESSION['usuario'])) {
             </header>
               <!-- jQuery first, then Popper.js, then Bootstrap JS -->
           <script src="assets/js/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
-    
+
             <!-- END: .main-heading -->
 
             <!-- begin .main-content -->
@@ -199,10 +199,10 @@ if (!isset($_SESSION['usuario'])) {
           <!-- END: .app-main -->
         </div>
         <!-- END: .app-container -->
-    
+
       <?php include 'wireframe/footer.php'; ?>
     <!--------------------------------------------------------------------------------- -->
-    
+
 
   <!-- Bootstrap -->
 
@@ -220,9 +220,6 @@ if (!isset($_SESSION['usuario'])) {
     <!-- ESTO ES PARA LOS CUADROS DE ALERTA  --->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js"></script>
-    <!-- ESTO ES PARA LOS CUADROS DE ALERTA --->
-    <!-- Vendor javascript files.
-    <script src="assets/js/vendor.js"></script>REQUIRED -->
     <!-- TABLA -->
     <link rel="stylesheet" type="text/css" href="assets/css/jquery.dataTables.min.css">
     <script type="text/javascript" language="javascript" src="assets/js/jquery.dataTables.min.js"></script>
@@ -235,10 +232,11 @@ if (!isset($_SESSION['usuario'])) {
     <script type="text/javascript" language="javascript" src="assets/js/pdfmake.min.js"></script>
     <script type="text/javascript" language="javascript" src="assets/js/vfs_fonts.js"></script>
     <script type="text/javascript" language="javascript" src="assets/js/buttons.html5.min.js"></script>
+   <!-- <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/rowgroup/1.1.2/js/dataTables.rowGroup.min.js" -->
+    <script type="text/javascript" language="javascript" src="assets/js/dataTables.rowGroup.min.js"
     <!--   DATATABLE-->
     <script src="assets/vendor/dragula/dragula.js"></script>
     <script src="assets/js/chl.js"></script>
-    <!--<script src="assets/js/chl-demo.js"></script>-->
     <script src="paginas/js/panel.js"></script>
   </body>
 

@@ -3,7 +3,7 @@ require_once "../../controlador/ControladorCombos.php";
 /*
 =================================================================================================
  * VALIDAR USUARIO!
-================================================================================================= 
+=================================================================================================
 */
 class Ajax_Combos{
 
@@ -30,14 +30,14 @@ class Ajax_Combos{
         public function comboTipoSocio($tabIndex ){
 
             $combo = new controladorCombos();
-            $combo = $combo->ComboTipoSocio($tabIndex ); 
+            $combo = $combo->ComboTipoSocio($tabIndex );
             echo $combo ;
             $combo = null;
         }
         public function comboSocios($tabIndex ){
 
             $combo = new controladorCombos();
-            $combo = $combo->ComboSocios($tabIndex ); 
+            $combo = $combo->ComboSocios($tabIndex );
             echo $combo ;
             $combo = null;
         }

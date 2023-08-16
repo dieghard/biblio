@@ -1,18 +1,29 @@
-function diadeHoy() {
-    var now = new Date();
 
-    var day = ("0" + now.getDate()).slice(-2);
-    var month = ("0" + (now.getMonth() + 1)).slice(-2);
-    var today = now.getFullYear() + "-" + (month) + "-" + day;
-    return today;
-}
 
 $(document).ready(function() {
     ///BOTON CERRAR
+
     LlenarGrilla();
     LLenarComboSocios_abm(4);
     LLenarComboSocios_filtro(1);
+
+
+
     /* //////////////////////////////////////////////////////////////////////////////// */
+
+    // Order by the grouping
+    $('#idTablaUser tbody').on( 'click', 'tr.group', function () {
+        var currentOrder = table.order()[0];
+        if ( currentOrder[0] === groupColumn && currentOrder[1] === 'asc' ) {
+            table.order( [ groupColumn, 'desc' ] ).draw();
+        }
+        else {
+            table.order( [ groupColumn, 'asc' ] ).draw();
+        }
+    } );
+
+
+
     $.getScript("paginas/js/combos.js", function(data, textStatus, $xhr) {
         LLenarComboSector(5);
     });
@@ -61,6 +72,11 @@ $(document).ready(function() {
 
     });
 
+
+
+
+
+
 });
 
 function LlenarGrilla() {
@@ -98,6 +114,14 @@ function LlenarGrilla() {
                 $('#tabla').html(oRta.tabla);
                 //TRADUCCION DE LA GRILLA DE MAESTRO SECTOR!!!
                 $('#idTablaUser').DataTable({
+                    dom: 'Bfrtip',
+                    buttons: [
+                       'excel'
+                    ],
+                    order: [[1, 'asc']],
+                    rowGroup: {
+                        dataSrc: 1
+                    },
                     "language": {
                         "lengthMenu": "Mostrando _MENU_ registros por página",
                         "zeroRecords": "Nada para Mostrar",
@@ -127,6 +151,7 @@ function ReciboNuevo() {
     $('#fecha').val(diadeHoy());
     $('#periodoMes').val(now.getMonth() + 1);
     $('#periodoAnio').val(now.getFullYear());
+    LLenarComboSocios_abm(4);
     $('#cmbsocios_impresion').val('Seleccione');
     $("#cmbsocios_impresion option[value=0]").attr("selected", true);
     $('#observaciones').val('');
@@ -212,7 +237,7 @@ function Validar(emision) {
 function Guardar_Datos() {
     ////CREO EL OBJETO
     var emision = PasarDatosEmision();
-    ///Valido los datos de la emision 
+    ///Valido los datos de la emision
     emision = Validar(emision);
 
     if (emision.seguir == false) {
@@ -249,7 +274,7 @@ function GuardarPago(emision) {
 
     datos.append("ACTION", 'ingresoPago');
     datos.append("datosjson", oEmision);
-    ////LO PASO CON FORM DATA    
+    ////LO PASO CON FORM DATA
     var strUrl = "ajax/ajaxEmisionRecibos.php";
     $.ajax({
         url: strUrl,
@@ -304,7 +329,7 @@ function EliminarRecibo(Recibo) {
     var datos = new FormData();
     datos.append("ACTION", 'eliminarSocio');
     datos.append("datosjson", oRecibo);
-    ////LO PASO CON FORM DATA    
+    ////LO PASO CON FORM DATA
     var strUrl = "ajax/ajaxabmUsers.php";
     $.ajax({
         url: strUrl,
@@ -343,7 +368,7 @@ function LLenarComboSocios_abm(tabIndex) {
             var oRta = JSON.parse(respuesta);
             if (oRta.success == true) {
                 $('#comboSociosabm').html(oRta.combo);
-                $('#cmbSocioAbm').select2();
+                $('#cmbsocios_impresion').select2();
             } else {
                 $('#cartel').html(oRta.mensaje);
             }
@@ -376,4 +401,12 @@ function LLenarComboSocios_filtro(tabIndex) {
 
         }
     });
+}
+function diadeHoy() {
+    var now = new Date();
+
+    var day = ("0" + now.getDate()).slice(-2);
+    var month = ("0" + (now.getMonth() + 1)).slice(-2);
+    var today = now.getFullYear() + "-" + (month) + "-" + day;
+    return today;
 }
