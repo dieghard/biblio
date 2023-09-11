@@ -28,7 +28,7 @@ $(document).ready(function () {
 });
 
 function LlenarGrilla() {
-	var strUrl = "ajax/ajaxAbmLocalidad.php";
+	var strUrl = "../Controller/controladorLocalidad.php";
 
 	var datos = new FormData();
 	datos.append("ACTION", "llenarGrilla");
@@ -165,7 +165,7 @@ function GuardarDatos(Localidad) {
 	datos.append("datosjson", oLocalidad);
 
 	////LO PASO CON FORM DATA
-	var strUrl = "ajax/ajaxAbmLocalidad.php";
+	var strUrl = "../Controller/LocalidadController.php";
 	$.ajax({
 		url: strUrl,
 		method: "POST",
@@ -223,7 +223,7 @@ function eliminarLocalidad(Localidad) {
 	datos.append("ACTION", "eliminarLocalidad");
 	datos.append("datosjson", oLocalidad);
 	////LO PASO CON FORM DATA
-	var strUrl = "ajax/ajaxAbmLocalidad.php";
+	var strUrl = "..";
 	$("#tabla").html(
 		'<div class="loading"><h7>Aguarde Un momento, por favor...</h7><img src="../vista/images/save.gif"  width="50" height="50" alt="loading"/></div>'
 	);

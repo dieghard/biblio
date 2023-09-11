@@ -68,7 +68,7 @@ $(document).ready(function () {
 });
 function LLenarComboSocios_Impresion(tabIndex) {
 	var datos = new FormData();
-	var strUrl = "ajax/ajaxCombos.php";
+	var strUrl = "../Controller/CombosController.php";
 	datos.append("tabIndex", tabIndex);
 	datos.append("combo", "socios_abm");
 	datos.append("idCombo", "socios_impresion");
@@ -133,7 +133,7 @@ function LlenarGrilla() {
 	var anioDesde = $("#anioDesdeFiltro").val();
 	var mesHasta = $("#mesHastaFiltro").val();
 	var anioHasta = $("#anioHastaFiltro").val();
-	var strUrl = "ajax/ajaxEmisionRecibos.php";
+	var strUrl = "../Controller/EmisionDeRecibosController.php";
 	var datos = new FormData();
 
 	datos.append("socioID", socioID);
@@ -188,17 +188,13 @@ function LlenarGrilla() {
 }
 function ReciboNuevo() {
 	var now = new Date();
-	//var today = now.getDate()  + '/' + (now.getMonth() + 1) + '/' + now.getFullYear();
 	LLenarComboSocios_abm(4);
 	$("#id").val("0");
 	$("#fecha").val(diadeHoy());
 	$("#periodoMes").val(now.getMonth() + 1);
 	$("#periodoAnio").val(now.getFullYear());
 
-	//$("#socios_abm option[value=0]").attr("selected",true);
-	//$('#socios_abm option:eq(0)').prop('selected',true)
 	$("#socios_abm").val(0).trigger("change.select2");
-	//$('#socios_abm').val(0);
 
 	$("#observaciones").val("");
 	$("#observaciosnes").val("");
@@ -291,13 +287,14 @@ function Guardar_Datos() {
 		}
 	});
 }
+
 function GuardarRecibos(emision) {
 	var oEmision = JSON.stringify(emision);
 	var datos = new FormData();
 	datos.append("ACTION", "ingresoEmision");
 	datos.append("datosjson", oEmision);
 	////LO PASO CON FORM DATA
-	var strUrl = "ajax/ajaxEmisionRecibos.php";
+	var strUrl = "../Controller/EmisionDeRecibosController.php";
 	$.ajax({
 		url: strUrl,
 		method: "POST",
@@ -347,7 +344,7 @@ function EliminarRecibo(Recibo) {
 	datos.append("ACTION", "eliminarSocio");
 	datos.append("datosjson", oRecibo);
 	////LO PASO CON FORM DATA
-	var strUrl = "ajax/ajaxabmUsers.php";
+	var strUrl = "../Controller/userController.php";
 	$.ajax({
 		url: strUrl,
 		method: "POST",
@@ -367,7 +364,7 @@ function EliminarRecibo(Recibo) {
 }
 function LLenarComboSocios_abm(tabIndex) {
 	var datos = new FormData();
-	var strUrl = "ajax/ajaxCombos.php";
+	var strUrl = "../Controller/CombosController.php";
 
 	datos.append("tabIndex", tabIndex);
 	datos.append("combo", "socios_abm");
@@ -400,7 +397,7 @@ function LLenarComboSocios_abm(tabIndex) {
 
 function LLenarComboSocios_filtro(tabIndex) {
 	var datos = new FormData();
-	var strUrl = "ajax/ajaxCombos.php";
+	var strUrl = "../Controller/CombosController.php";
 	datos.append("tabIndex", tabIndex);
 	datos.append("combo", "socios_abm");
 	datos.append("idCombo", "comboSociosfiltro");

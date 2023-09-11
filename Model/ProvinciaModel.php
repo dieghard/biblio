@@ -1,24 +1,24 @@
 <?php
-  //  header("Content-type: application/json; charset=utf-8");
-
-class Modelosector
+namespace Model;
+require_once 'conexion.php';
+use Model\Conexion;
+use PDO;
+use Exception;
+class ProvinciasModel
 {
     public function __construct()
     {
-        require_once 'conexion.php';
     }
 
-    private function armarSqlSelect($bibliotecaID)
+    private function armarSqlSelect()
     {
         $sql = 'SELECT id,UPPER(descripcion) as descripcion
-                FROM sector
-                where bibliotecaid='.$bibliotecaID.
-                ' ORDER BY descripcion';
+                FROM provincias';
 
         return $sql;
     }
 
-    public function llenarGrilla($bibliotecaID)
+    public function llenarGrilla()
     {
         $coneccion = new Conexion();
         $dbConectado = $coneccion->DBConect();
@@ -27,7 +27,7 @@ class Modelosector
         $superArray['mensaje'] = '';
         $superArray['tabla'] = '';
 
-        $strSql = $this->armarSqlSelect($bibliotecaID);
+        $strSql = $this->armarSqlSelect();
         $tabla = '';
         try {
             $stmt = $dbConectado->prepare($strSql);
@@ -39,8 +39,9 @@ class Modelosector
                         <tr>
                             <th scope="col">DESCRIPCION</th>
                             <th scope="col"></th>
+
                         </tr>
-                    </thead>    
+                    </thead>
                 <tbody>';
 
             if ($registro) {
@@ -56,10 +57,10 @@ class Modelosector
                     $tabla .= '</tr>'; //nueva fila
                 }
             }
-            $tabla .= '</tbody> 
+            $tabla .= '</tbody>
                         </table>
                         </div>';
-        } catch (Throwable $e) {
+        } catch (Exception $e) {
             $superArray['success'] = false;
 
             $trace = $e->getTrace();
@@ -74,21 +75,21 @@ class Modelosector
 
     private function armarSqlInsert()
     {
-        $strSql = 'INSERT INTO  sector (bibliotecaid, descripcion)
-                    VALUES                (:bibliotecaid,:descripcion)';
+        $strSql = 'INSERT INTO  provincias (descripcion)VALUES
+                   (:descripcion)';
 
         return $strSql;
     }
 
     private function armarSqlUpdate()
     {
-        $strSql = 'UPDATE sector set descripcion=:descripcion WHERE id=:id and bibliotecaid=:bibliotecaid';
+        $strSql = 'UPDATE provincias set descripcion=:descripcion WHERE id=:id';
 
         return $strSql;
     }
 
     /*--------------------------------------------------------------------------------------------- */
-    public function ingresarActualizarSector($bibliotecaID, $data)
+    public function ingresarActualizarProvincia($data)
     {
         /* ACA INSERTAMOS LOS DATOS!!!! */
 
@@ -110,7 +111,6 @@ class Modelosector
         if ($data->id > 0) {
             $stmt->bindParam(':id', $data->id, PDO::PARAM_INT);
         }
-        $stmt->bindParam(':bibliotecaid', $bibliotecaID, PDO::PARAM_INT);
         $stmt->bindParam(':descripcion', $data->descripcion, PDO::PARAM_STR);
 
         //Comienzo la transaccion
@@ -130,14 +130,14 @@ class Modelosector
         return json_encode($superArray);
     }
 
-    public function eliminarSector($bibliotecaID, $data)
+    public function eliminarProvincia($data)
     {
         $conexion = new Conexion();
         $dbConectado = $conexion->DBConect();
         $superArray['success'] = true;
         $superArray['mensaje'] = '';
 
-        $strSql = 'Select sectorid from socios where sectorid=:id';
+        $strSql = 'Select provinciaid from socios where provinciaid=:id';
         $stmt = $dbConectado->prepare($strSql);
         $stmt->bindParam(':id', $data->id, PDO::PARAM_INT);
         /*Comienzo la transaccion */
@@ -147,7 +147,7 @@ class Modelosector
             $registro = $stmt->fetchAll();
             if ($registro) {
                 $superArray['success'] = false;
-                $superArray['mensaje'] = 'NO SE PUEDE ELIMINAR EL SECTOR YA QUE SOCIOS LA ESTAN UTILIZANDO';
+                $superArray['mensaje'] = 'NO SE PUEDE ELIMINAR LA PROVINCIA YA QUE SOCIOS LA ESTAN UTILIZANDO';
 
                 return json_encode($superArray);
             }
@@ -158,7 +158,7 @@ class Modelosector
             return json_encode($superArray);
         }
 
-        $strSql = 'DELETE FROM sector WHERE id=:id ';
+        $strSql = 'DELETE FROM provincias   WHERE id=:id ';
 
         $stmt = $dbConectado->prepare($strSql);
         $stmt->bindParam(':id', $data->id, PDO::PARAM_INT);

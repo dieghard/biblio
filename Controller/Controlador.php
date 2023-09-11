@@ -1,6 +1,9 @@
 <?php
 
-//namespace Controlador;
+namespace Controlador;
+
+require_once '../Model/Modelo.php';
+use Model\Modelo;
 class Controlador
 {
  /*=============================================
@@ -8,15 +11,15 @@ class Controlador
  =============================================*/
     public function ControladorLinks()
     {
-        $MP = new ModeloPlantilla();
+        $MP = new Modelo();
 
         if (isset($_GET['action'])) {
             $enlaces = $_GET['action'];
-        } 
+        }
         else {
             $enlaces = 'panel';
         }
-        $respuesta = $MP->enlacesPaginasModelo($enlaces);
+        $respuesta = $MP->ControladorLinksModelo($enlaces);
         include $respuesta;
         $respuesta = null;
     }

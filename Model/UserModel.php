@@ -1,12 +1,11 @@
 <?php
-  //  header("Content-type: application/json; charset=utf-8");
-/*
- MANEJO DEL MODELO DE MATPEL
- */
 
+namespace Model;
 require_once 'conexion.php';
-
-class UserModelo
+use Model\Conexion;
+use PDO;
+use Exception;
+class UserModel
 {
     public function Modificar($data)
     {
@@ -17,7 +16,7 @@ class UserModelo
                                              pass=:pass,
                                              activo=:activo,
                                              cuartelID=:cuartelID,
-                                             rol=:rol                          
+                                             rol=:rol
                             WHERE id=:id';
 
         $stmt = $dbConectado->prepare($strSql);
@@ -63,7 +62,7 @@ class UserModelo
                                         tipoSocioId,
                                         rol,
                                         pagaCuota)
-                    VALUES( 
+                    VALUES(
                             :bilbiotecaId,
                             :numeroSocio,
                             :apellidoyNombre,
@@ -101,7 +100,7 @@ class UserModelo
                                         tipoSocioId=:tipoSocioId,
                                         rol=:rol,
                                         pagaCuota=:pagaCuota
-                        WHERE id=:id                    
+                        WHERE id=:id
                     ';
 
         return $strSql;
@@ -235,8 +234,8 @@ class UserModelo
     {
         $Coneccion = new Conexion();
         $dbConectado = $Coneccion->DBConect();
-        $strSql = 'SELECT id, nombre 
-                    FROM biblioteca  
+        $strSql = 'SELECT id, nombre
+                    FROM biblioteca
                     ORDER BY nombre ';
         try {
             $stmt = $dbConectado->prepare($strSql);
@@ -254,9 +253,9 @@ class UserModelo
                     $tabla .= '<option value='.$row['id'].'>'.$row['nombre'].'</option>';
                 }
             }
-            $tabla .= '</select> </br><small>si no encuentra su biblioteca, envie sus datos a info@rasoftware.com.ar y será ingresado.</small> 
+            $tabla .= '</select> </br><small>si no encuentra su biblioteca, envie sus datos a info@rasoftware.com.ar y será ingresado.</small>
                               </div>';
-        } catch (Throwable $e) {
+        } catch (Exception $e) {
             $trace = $e->getTrace();
             echo $e->getMessage().' en '.$e->getFile().' en la linea '.$e->getLine().' llamado desde '.$trace[0]['file'].' on line '.$trace[0]['line'];
         }
@@ -290,7 +289,7 @@ class UserModelo
                         <tr>
                             <th scope="col">DOCUMENTO</th>
                             <th scope="col">NOMBRE</th>
-                            <th scope="col">TELEFONO</th> 
+                            <th scope="col">TELEFONO</th>
                             <th scope="col">MAIL</th>
                             <th scope="col">PASS</th>
                             <th scope="col">SECTOR</th>
@@ -350,10 +349,10 @@ class UserModelo
                     $tabla .= '</tr>'; //nueva fila
                 }
             }
-            $tabla .= '</tbody> 
+            $tabla .= '</tbody>
                         </table>
                         </div>';
-        } catch (Throwable $e) {
+        } catch (Exception $e) {
             $superArray['success'] = false;
 
             $trace = $e->getTrace();
@@ -418,7 +417,7 @@ class UserModelo
                     array_push($superArray, $superSocio);
                 }
             }
-        } catch (Throwable $e) {
+        } catch (Exception $e) {
             $superArray['success'] = false;
             $trace = $e->getTrace();
             $superArray['mensaje'] = $e->getMessage().' en '.$e->getFile().' en la linea '.$e->getLine().' llamado desde '.$trace[0]['file'].' on line '.$trace[0]['line'];
@@ -431,7 +430,7 @@ class UserModelo
 
     public function ARMAR_SQL_SELECT()
     {
-        $sql = "SELECT  S.id, 
+        $sql = "SELECT  S.id,
                             S.bilbiotecaId,
                             IFNULL(numeroSocio,'') as numeroSocio  ,
                             upper(B.nombre) as biblioteca,
@@ -490,7 +489,7 @@ class UserModelo
                           AND   S.pass=:pass
                           AND   S.bilbiotecaId=:bibliotecaID
                           AND S.activo ='SI'
-                                LIMIT 1;                    
+                                LIMIT 1;
                                 ";
         // Start the session
         // $jsondata['sql'] = $strSql;
@@ -581,7 +580,7 @@ class UserModelo
                 $jsondata['error'] = 'Usuario o contraseña incorrento';
                 $jsondata['path'] = '#';
             }
-        } catch (Throwable $e) {
+        } catch (Exception $e) {
             $trace = $e->getTrace();
             $elDato = $e->getMessage().' en '.$e->getFile().' en la linea '.$e->getLine().' llamado desde '.$trace[0]['file'].' on line '.$trace[0]['line'];
             $jsondata['success'] = false;
@@ -604,7 +603,7 @@ class UserModelo
             $stmt->bindParam(':mail', $mail, PDO::PARAM_STR);
             $elDato = '0';
             $stmt->execute();
-        } catch (Throwable $e) {
+        } catch (Exception $e) {
             $trace = $e->getTrace();
             $registro = $e->getMessage().' en '.$e->getFile().' en la linea '.$e->getLine().' llamado desde '.$trace[0]['file'].' on line '.$trace[0]['line'];
 
@@ -655,7 +654,7 @@ class UserModelo
 
             $elDato = '0';
             $stmt->execute();
-        } catch (Throwable $e) {
+        } catch (Exception $e) {
             $trace = $e->getTrace();
             $registro = $e->getMessage().' en '.$e->getFile().' en la linea '.$e->getLine().' llamado desde '.$trace[0]['file'].' on line '.$trace[0]['line'];
 

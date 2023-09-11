@@ -1,11 +1,14 @@
 <?php
-  //  header("Content-type: application/json; charset=utf-8");
-
-class ModeloCostoCuota
+namespace Model;
+require_once 'conexion.php';
+use Model\Conexion;
+use PDO;
+use Exception;
+class CostoCuotaModel
 {
     public function __construct()
     {
-        require_once 'conexion.php';
+
     }
 
     private function armarSqlSelect($bibliotecaID)
@@ -59,10 +62,10 @@ class ModeloCostoCuota
                     $tabla .= '</tr>'; //nueva fila
                 }
             }
-            $tabla .= '</tbody> 
+            $tabla .= '</tbody>
                         </table>
                         </div>';
-        } catch (Throwable $e) {
+        } catch (Exception $e) {
             $superArray['success'] = false;
 
             $trace = $e->getTrace();

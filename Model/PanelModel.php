@@ -1,8 +1,10 @@
 <?php
-
+namespace Model;
 require_once 'conexion.php';
-
-class modeloPanel
+use Model\Conexion;
+use PDO;
+use Exception;
+class PanelModel
 {
     public function __construct()
     {
@@ -38,7 +40,7 @@ class modeloPanel
                     $superArray['cantidadUsuariosActivos'] = $row['cantidad'];
                 }
             }
-        } catch (Throwable $e) {
+        } catch (Exception $e) {
             $superArray['success'] = false;
             $trace = $e->getTrace();
             $superArray['mensaje'] = $e->getMessage().' en '.$e->getFile().' en la linea '.$e->getLine().' llamado desde '.$trace[0]['file'].' on line '.$trace[0]['line'];
@@ -61,7 +63,7 @@ class modeloPanel
                     $superArray['cantidadUsuariosInactivos'] = $row['cantidad'];
                 }
             }
-        } catch (Throwable $e) {
+        } catch (Exception $e) {
             $superArray['success'] = false;
             $trace = $e->getTrace();
             $superArray['mensaje'] = $e->getMessage().' en '.$e->getFile().' en la linea '.$e->getLine().' llamado desde '.$trace[0]['file'].' on line '.$trace[0]['line'];
@@ -73,7 +75,7 @@ class modeloPanel
         $strSql = 'SELECT  m.socioId,m.saldo
                      from movimientos m
                     inner join socios s on s.id = m.socioId
-                 Where 1= 1 
+                 Where 1= 1
                         AND ifnull(m.Eliminado,"NO") <>"SI"
                         AND  ifnull(s.activo,"NO")="SI"
                         AND  bilbiotecaId=:bibliotecaID
@@ -90,7 +92,7 @@ class modeloPanel
                     $superArray['saldo'] += $row['saldo'];
                 }
             }
-        } catch (Throwable $e) {
+        } catch (Exception $e) {
             $superArray['success'] = false;
             $trace = $e->getTrace();
             $superArray['mensaje'] = $e->getMessage().' en '.$e->getFile().' en la linea '.$e->getLine().' llamado desde '.$trace[0]['file'].' on line '.$trace[0]['line'];

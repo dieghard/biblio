@@ -1,17 +1,19 @@
 <?php
-  //  header("Content-type: application/json; charset=utf-8");
-
-class ModeloProvincias
+namespace Model;
+require_once 'conexion.php';
+use Model\Conexion;
+use PDO;
+use Exception;
+class LocalidadModel
 {
     public function __construct()
     {
-        require_once 'conexion.php';
     }
 
     private function armarSqlSelect()
     {
         $sql = 'SELECT id,UPPER(descripcion) as descripcion
-                FROM provincias';
+                FROM localidades';
 
         return $sql;
     }
@@ -37,9 +39,9 @@ class ModeloProvincias
                         <tr>
                             <th scope="col">DESCRIPCION</th>
                             <th scope="col"></th>
-                            
+
                         </tr>
-                    </thead>    
+                    </thead>
                 <tbody>';
 
             if ($registro) {
@@ -55,10 +57,10 @@ class ModeloProvincias
                     $tabla .= '</tr>'; //nueva fila
                 }
             }
-            $tabla .= '</tbody> 
+            $tabla .= '</tbody>
                         </table>
                         </div>';
-        } catch (Throwable $e) {
+        } catch (Exception $e) {
             $superArray['success'] = false;
 
             $trace = $e->getTrace();
@@ -73,7 +75,7 @@ class ModeloProvincias
 
     private function armarSqlInsert()
     {
-        $strSql = 'INSERT INTO  provincias (descripcion)VALUES
+        $strSql = 'INSERT INTO  localidades (descripcion)VALUES
                    (:descripcion)';
 
         return $strSql;
@@ -81,13 +83,13 @@ class ModeloProvincias
 
     private function armarSqlUpdate()
     {
-        $strSql = 'UPDATE provincias set descripcion=:descripcion WHERE id=:id';
+        $strSql = 'UPDATE localidades set descripcion=:descripcion WHERE id=:id';
 
         return $strSql;
     }
 
     /*--------------------------------------------------------------------------------------------- */
-    public function ingresarActualizarProvincia($data)
+    public function ingresarActualizarLocalidad($data)
     {
         /* ACA INSERTAMOS LOS DATOS!!!! */
 
@@ -128,14 +130,14 @@ class ModeloProvincias
         return json_encode($superArray);
     }
 
-    public function eliminarProvincia($data)
+    public function eliminarLocalidad($data)
     {
         $conexion = new Conexion();
         $dbConectado = $conexion->DBConect();
         $superArray['success'] = true;
         $superArray['mensaje'] = '';
 
-        $strSql = 'Select provinciaid from socios where provinciaid=:id';
+        $strSql = 'Select localidadid from socios where localidadid=:id';
         $stmt = $dbConectado->prepare($strSql);
         $stmt->bindParam(':id', $data->id, PDO::PARAM_INT);
         /*Comienzo la transaccion */
@@ -145,7 +147,7 @@ class ModeloProvincias
             $registro = $stmt->fetchAll();
             if ($registro) {
                 $superArray['success'] = false;
-                $superArray['mensaje'] = 'NO SE PUEDE ELIMINAR LA PROVINCIA YA QUE SOCIOS LA ESTAN UTILIZANDO';
+                $superArray['mensaje'] = 'NO SE PUEDE ELIMINAR LA LOCALIDAD YA QUE SOCIOS LA ESTAN UTILIZANDO';
 
                 return json_encode($superArray);
             }
@@ -156,7 +158,7 @@ class ModeloProvincias
             return json_encode($superArray);
         }
 
-        $strSql = 'DELETE FROM provincias   WHERE id=:id ';
+        $strSql = 'DELETE FROM localidades   WHERE id=:id ';
 
         $stmt = $dbConectado->prepare($strSql);
         $stmt->bindParam(':id', $data->id, PDO::PARAM_INT);

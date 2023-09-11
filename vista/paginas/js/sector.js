@@ -28,7 +28,7 @@ $(document).ready(function () {
 });
 
 function LlenarGrilla() {
-	var strUrl = "ajax/ajaxSector.php";
+	var strUrl = "../Controller/SectorController.php";
 
 	var datos = new FormData();
 	datos.append("ACTION", "llenarGrilla");
@@ -152,7 +152,8 @@ function GuardarDatos(sector) {
 	datos.append("datosjson", oSector);
 
 	////LO PASO CON FORM DATA
-	var strUrl = "ajax/ajaxSector.php";
+	var strUrl = "../Controller/SectorController.php";
+
 	$.ajax({
 		url: strUrl,
 		method: "POST",
@@ -211,7 +212,8 @@ function eliminarSector(sector) {
 	datos.append("ACTION", "eliminarSector");
 	datos.append("datosjson", oSector);
 	////LO PASO CON FORM DATA
-	var strUrl = "ajax/ajaxSector.php";
+	var strUrl = "../Controller/SectorController.php";
+
 	$("#tabla").html(
 		'<div class="loading"><h7>Aguarde Un momento, por favor...</h7><img src="../vista/images/save.gif"  width="50" height="50" alt="loading"/></div>'
 	);

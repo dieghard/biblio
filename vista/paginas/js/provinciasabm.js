@@ -28,7 +28,7 @@ $(document).ready(function () {
 });
 
 function LlenarGrilla() {
-	var strUrl = "ajax/ajaxAbmProvincias.php";
+	var strUrl = "../Controller/ProvinciaController.php";
 
 	var datos = new FormData();
 	datos.append("ACTION", "llenarGrilla");
@@ -163,7 +163,7 @@ function GuardarDatos(provincia) {
 	);
 	datos.append("ACTION", "ingresarActualizarProvincia");
 	datos.append("datosjson", oProvincia);
-	var strUrl = "ajax/ajaxAbmProvincias.php";
+	var strUrl = "../Controller/ProvinciaController.php";
 	$.ajax({
 		url: strUrl,
 		method: "POST",
@@ -222,7 +222,7 @@ function eliminarProvincia(provincia) {
 	datos.append("ACTION", "eliminarProvincia");
 	datos.append("datosjson", oProvincia);
 	////LO PASO CON FORM DATA
-	var strUrl = "ajax/ajaxAbmProvincias.php";
+	var strUrl = "../Controller/ProvinciaController.php";
 	$("#tabla").html(
 		'<div class="loading"><h7>Aguarde Un momento, por favor...</h7><img src="../vista/images/save.gif"  width="50" height="50" alt="loading"/></div>'
 	);

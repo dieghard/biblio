@@ -1,7 +1,7 @@
 <?php
 
 require 'fpdf/fpdf.php';
-require_once '../../../modelo/conexion.php';
+require_once './modelo/conexion.php';
 
 $action= $_GET['ACTION'];
 
@@ -109,7 +109,7 @@ try {
           }
         }
     }
-catch (Throwable $e) {
+catch (Exception $e) {
         $superArray['success'] = false;
         $trace = $e->getTrace();
        echo $e->getMessage().' en '.$e->getFile().' en la linea '.$e->getLine().' llamado desde '.$trace[0]['file'].' on line '.$trace[0]['line'];

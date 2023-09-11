@@ -1,12 +1,14 @@
 <?php
-
+namespace Model;
 require_once 'conexion.php';
-
-class ModeloCombos
+use Model\Conexion;
+use PDO;
+use Exception;
+class CombosModel
 {
     public function __construct()
     {
-        require_once 'conexion.php';
+
     }
     public function ComboLocalidad($tabIndex)
     {
@@ -33,7 +35,7 @@ class ModeloCombos
             }
             $combo .= '</select>';
             $superArray['combo'] = $combo;
-        } catch (Throwable $e) {
+        } catch (Exception $e) {
             $trace = $e->getTrace();
             $superArray['false'] = false;
             $superArray['mensaje'] = $e->getMessage().' en '.$e->getFile().' en la linea '.$e->getLine().' llamado desde '.$trace[0]['file'].' on line '.$trace[0]['line'];
@@ -67,7 +69,7 @@ class ModeloCombos
             $superArray['combo'] = $combo;
 
             return json_encode($superArray);
-        } catch (Throwable $e) {
+        } catch (Exception $e) {
             $trace = $e->getTrace();
             $superArray['false'] = false;
             $superArray['mensaje'] = $e->getMessage().' en '.$e->getFile().' en la linea '.$e->getLine().' llamado desde '.$trace[0]['file'].' on line '.$trace[0]['line'];
@@ -108,7 +110,7 @@ class ModeloCombos
             $superArray['combo'] = $combo;
 
             return json_encode($superArray);
-        } catch (Throwable $e) {
+        } catch (Exception $e) {
             $trace = $e->getTrace();
             $superArray['false'] = false;
             $superArray['mensaje'] = $e->getMessage().' en '.$e->getFile().' en la linea '.$e->getLine().' llamado desde '.$trace[0]['file'].' on line '.$trace[0]['line'];
@@ -149,7 +151,7 @@ class ModeloCombos
             $superArray['combo'] = $combo;
 
             return json_encode($superArray);
-        } catch (Throwable $e) {
+        } catch (Exception $e) {
             $trace = $e->getTrace();
             $superArray['false'] = false;
             $superArray['mensaje'] = $e->getMessage().' en '.$e->getFile().' en la linea '.$e->getLine().' llamado desde '.$trace[0]['file'].' on line '.$trace[0]['line'];
@@ -191,7 +193,7 @@ class ModeloCombos
             $superArray['combo'] = $combo;
 
             return json_encode($superArray);
-        } catch (Throwable $e) {
+        } catch (Exception $e) {
             $trace = $e->getTrace();
             $superArray['success'] = false;
             $superArray['mensaje'] = $e->getMessage().' en '.$e->getFile().' en la linea '.$e->getLine().' llamado desde '.$trace[0]['file'].' on line '.$trace[0]['line'];
@@ -233,7 +235,7 @@ class ModeloCombos
             $superArray['combo'] = $combo;
 
             return json_encode($superArray);
-        } catch (Throwable $e) {
+        } catch (Exception $e) {
             $trace = $e->getTrace();
             $superArray['success'] = false;
             $superArray['mensaje'] = $e->getMessage().' en '.$e->getFile().' en la linea '.$e->getLine().' llamado desde '.$trace[0]['file'].' on line '.$trace[0]['line'];
@@ -276,7 +278,7 @@ class ModeloCombos
             $superArray['combo'] = $combo;
 
             return json_encode($superArray);
-        } catch (Throwable $e) {
+        } catch (Exception $e) {
             $trace = $e->getTrace();
             $superArray['success'] = false;
             $superArray['mensaje'] = $e->getMessage().' en '.$e->getFile().' en la linea '.$e->getLine().' llamado desde '.$trace[0]['file'].' on line '.$trace[0]['line'];

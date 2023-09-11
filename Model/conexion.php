@@ -1,4 +1,7 @@
 <?php
+namespace Model;
+use PDOException;
+use PDO;
     class Conexion{
         public function DBConect(){
             /*
@@ -8,7 +11,7 @@
             $PASSWORD = 'Die*666666';
             */
             $SERVIDOR = "localhost";
-            $BASE_DE_DATOS = "biblioteca";
+            $BASE_DE_DATOS = "biblio2";
             $USUARIO= "root";
             $PASSWORD= "";
             try {

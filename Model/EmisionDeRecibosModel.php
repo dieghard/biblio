@@ -1,9 +1,10 @@
 <?php
   //  header("Content-type: application/json; charset=utf-8");
-
+namespace Model;
 require_once 'conexion.php';
-
-class ModeloEmisionDeRecibos
+use Model\conexion;
+use Exception;
+class EmisionDeRecibosModel
 {
     private function armarSqlSelect($data)
     {
@@ -104,7 +105,7 @@ class ModeloEmisionDeRecibos
             $tabla .= '</tbody>
                         </table>
                         </div>';
-        } catch (Throwable $e) {
+        } catch (Exception $e) {
             $superArray['success'] = false;
 
             $trace = $e->getTrace();
@@ -233,7 +234,7 @@ class ModeloEmisionDeRecibos
                     $saldo = $row['saldo'];
                 }
             }
-        } catch (Throwable $e) {
+        } catch (Exception $e) {
             $superArray['success'] = false;
             $trace = $e->getTrace();
             $superArray['mensaje'] = $e->getMessage().' en '.$e->getFile().' en la linea '.$e->getLine().' llamado desde '.$trace[0]['file'].' on line '.$trace[0]['line'];

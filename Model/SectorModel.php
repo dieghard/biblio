@@ -1,22 +1,26 @@
 <?php
-  //  header("Content-type: application/json; charset=utf-8");
-
-class ModeloLocalidad
+namespace Model;
+require_once 'conexion.php';
+use Model\Conexion;
+use PDO;
+use Exception;
+class SectorModel
 {
     public function __construct()
     {
-        require_once 'conexion.php';
     }
 
-    private function armarSqlSelect()
+    private function armarSqlSelect($bibliotecaID)
     {
         $sql = 'SELECT id,UPPER(descripcion) as descripcion
-                FROM localidades';
+                FROM sector
+                where bibliotecaid='.$bibliotecaID.
+                ' ORDER BY descripcion';
 
         return $sql;
     }
 
-    public function llenarGrilla()
+    public function llenarGrilla($bibliotecaID)
     {
         $coneccion = new Conexion();
         $dbConectado = $coneccion->DBConect();
@@ -25,7 +29,7 @@ class ModeloLocalidad
         $superArray['mensaje'] = '';
         $superArray['tabla'] = '';
 
-        $strSql = $this->armarSqlSelect();
+        $strSql = $this->armarSqlSelect($bibliotecaID);
         $tabla = '';
         try {
             $stmt = $dbConectado->prepare($strSql);
@@ -37,9 +41,8 @@ class ModeloLocalidad
                         <tr>
                             <th scope="col">DESCRIPCION</th>
                             <th scope="col"></th>
-                            
                         </tr>
-                    </thead>    
+                    </thead>
                 <tbody>';
 
             if ($registro) {
@@ -55,10 +58,10 @@ class ModeloLocalidad
                     $tabla .= '</tr>'; //nueva fila
                 }
             }
-            $tabla .= '</tbody> 
+            $tabla .= '</tbody>
                         </table>
                         </div>';
-        } catch (Throwable $e) {
+        } catch (Exception $e) {
             $superArray['success'] = false;
 
             $trace = $e->getTrace();
@@ -73,21 +76,21 @@ class ModeloLocalidad
 
     private function armarSqlInsert()
     {
-        $strSql = 'INSERT INTO  localidades (descripcion)VALUES
-                   (:descripcion)';
+        $strSql = 'INSERT INTO  sector (bibliotecaid, descripcion)
+                    VALUES                (:bibliotecaid,:descripcion)';
 
         return $strSql;
     }
 
     private function armarSqlUpdate()
     {
-        $strSql = 'UPDATE localidades set descripcion=:descripcion WHERE id=:id';
+        $strSql = 'UPDATE sector set descripcion=:descripcion WHERE id=:id and bibliotecaid=:bibliotecaid';
 
         return $strSql;
     }
 
     /*--------------------------------------------------------------------------------------------- */
-    public function ingresarActualizarLocalidad($data)
+    public function ingresarActualizarSector($bibliotecaID, $data)
     {
         /* ACA INSERTAMOS LOS DATOS!!!! */
 
@@ -109,6 +112,7 @@ class ModeloLocalidad
         if ($data->id > 0) {
             $stmt->bindParam(':id', $data->id, PDO::PARAM_INT);
         }
+        $stmt->bindParam(':bibliotecaid', $bibliotecaID, PDO::PARAM_INT);
         $stmt->bindParam(':descripcion', $data->descripcion, PDO::PARAM_STR);
 
         //Comienzo la transaccion
@@ -128,14 +132,14 @@ class ModeloLocalidad
         return json_encode($superArray);
     }
 
-    public function eliminarLocalidad($data)
+    public function eliminarSector($bibliotecaID, $data)
     {
         $conexion = new Conexion();
         $dbConectado = $conexion->DBConect();
         $superArray['success'] = true;
         $superArray['mensaje'] = '';
 
-        $strSql = 'Select localidadid from socios where localidadid=:id';
+        $strSql = 'Select sectorid from socios where sectorid=:id';
         $stmt = $dbConectado->prepare($strSql);
         $stmt->bindParam(':id', $data->id, PDO::PARAM_INT);
         /*Comienzo la transaccion */
@@ -145,7 +149,7 @@ class ModeloLocalidad
             $registro = $stmt->fetchAll();
             if ($registro) {
                 $superArray['success'] = false;
-                $superArray['mensaje'] = 'NO SE PUEDE ELIMINAR LA LOCALIDAD YA QUE SOCIOS LA ESTAN UTILIZANDO';
+                $superArray['mensaje'] = 'NO SE PUEDE ELIMINAR EL SECTOR YA QUE SOCIOS LA ESTAN UTILIZANDO';
 
                 return json_encode($superArray);
             }
@@ -156,7 +160,7 @@ class ModeloLocalidad
             return json_encode($superArray);
         }
 
-        $strSql = 'DELETE FROM localidades   WHERE id=:id ';
+        $strSql = 'DELETE FROM sector WHERE id=:id ';
 
         $stmt = $dbConectado->prepare($strSql);
         $stmt->bindParam(':id', $data->id, PDO::PARAM_INT);
