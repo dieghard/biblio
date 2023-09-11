@@ -1,6 +1,6 @@
 <?php
 namespace Controller;
-require_once '../../model/EmisionDeRecibosModel.php';
+require_once '../Model/EmisionDeRecibosModel.php';
 use Model\EmisionDeRecibosModel;
 
 class EmisionDeRecibosController
@@ -13,22 +13,13 @@ class EmisionDeRecibosController
 
     public function LLenarGrilla($bibliotecaID,$data)
     {
+        return  $this->MP->LlenarGrilla($bibliotecaID,$data);
 
-
-        $grilla = $this->MP->LlenarGrilla($bibliotecaID,$data);
-
-        return $grilla;
-        $MP = null;
     }
-
-
 
     public function IngresoEmisionRecibos($bibliotecaID, $misDatosJSON)
     {
-
-        $ingreso = $this->MP->IngresoEmisionRecibos($bibliotecaID, $misDatosJSON);
-        return $ingreso;
-        $this->MP = null;
+       return $this->MP->IngresoEmisionRecibos($bibliotecaID, $misDatosJSON);
     }
 
     /* ******************************************************************************
@@ -36,29 +27,31 @@ class EmisionDeRecibosController
     ***** */
     public function ingresoEmisionPagos($bibliotecaID, $misDatosJSON)
     {
-        $ingreso =  $this->MP->IngresoEmisionPagos($bibliotecaID, $misDatosJSON);
+       return  $this->MP->IngresoEmisionPagos($bibliotecaID, $misDatosJSON);
 
-        return $ingreso;
-        $this->MP = null;
     }
 }
 
+$respuesta = '';
 
 if (isset($_POST['ACTION'])) {
     $accion = $_POST['ACTION'];
 } else {
-    return;
+    echo $respuesta;
+  return;
 }
 
 if ($accion == 'llenarGrilla') {
-    LlenarGrilla();
+    $respuesta = LlenarGrilla();
 }
 if ($accion == 'ingresoEmision') {
-    IngresoEmisionRecibos();
+    $respuesta = IngresoEmisionRecibos();
 }
 if ($accion == 'ingresoPago') {
-    ingresoEmisionPagos();
+    $respuesta = ingresoEmisionPagos();
 }
+
+echo $respuesta;
 
 function LlenarGrilla()
 {
@@ -74,7 +67,7 @@ function LlenarGrilla()
     $data['mesHasta'] = $_POST['mesHasta'];
     $data['anioHasta'] = $_POST['anioHasta'];
 
-    $respuesta->llenarGrilla($bibliotecaID,$data);
+    return $respuesta->llenarGrilla($bibliotecaID,$data);
 }
 function IngresoEmisionRecibos()
 {
@@ -92,7 +85,7 @@ function IngresoEmisionRecibos()
     //$superArray['$bibliotecaID'] = $bibliotecaID ;
 
     //echo json_encode($superArray);
-    $respuesta->ingresoEmisionRecibos($bibliotecaID, $misDatosJSON);
+    return $respuesta->ingresoEmisionRecibos($bibliotecaID, $misDatosJSON);
 }
   function ingresoEmisionPagos()
   {
@@ -110,5 +103,5 @@ function IngresoEmisionRecibos()
       //$superArray['$bibliotecaID'] = $bibliotecaID ;
 
       //echo json_encode($superArray);
-      $respuesta->ingresoEmisionPagos($bibliotecaID, $misDatosJSON);
+      return $respuesta->ingresoEmisionPagos($bibliotecaID, $misDatosJSON);
   }

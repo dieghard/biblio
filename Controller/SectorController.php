@@ -1,6 +1,6 @@
 <?php
 namespace Controller;
-require_once '../../Modelo/SectorModel.php';
+require_once '../Model/SectorModel.php';
 use Model\SectorModel;
 
 class SectorController

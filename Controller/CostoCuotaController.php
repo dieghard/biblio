@@ -1,7 +1,7 @@
 <?php
 namespace Controller;
 
-require_once '../../Model/CostoCuotaModel.php';
+require_once '../Model/CostoCuotaModel.php';
 use Model\CostoCuotaModel;
 
 class CostoCuotaController

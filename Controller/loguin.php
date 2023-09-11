@@ -2,16 +2,10 @@
 //namespace Controlador;
 class ControladorLogin{
 
-	/*=============================================
-	LLAMAMOS LA PLANTILLA
-	=============================================*/
 
 	public function Login(){
 		include "vista/login.php";
 	}
-	/*=============================================
-	Interaccion del Usuario
-	=============================================*/
 	public function enlacesPaginasController(){
 		$MP = new ModeloPlantilla();
 

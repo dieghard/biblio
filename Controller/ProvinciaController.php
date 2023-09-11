@@ -1,6 +1,6 @@
 <?php
 namespace Controller;
-require_once '../../Model/ProvinciaModel.php';
+require_once '../Model/ProvinciaModel.php';
 use Model\ProvinciasModel;
 
 class ProvinciaController

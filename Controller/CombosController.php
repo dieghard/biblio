@@ -1,6 +1,6 @@
 <?php
 namespace Controller;
-require_once '../../Model/CombosModel.php';
+require_once '../Model/CombosModel.php';
 use Model\CombosModel;
 
 class CombosController{

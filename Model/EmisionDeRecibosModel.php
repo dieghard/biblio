@@ -4,6 +4,7 @@ namespace Model;
 require_once 'conexion.php';
 use Model\conexion;
 use Exception;
+use PDO;
 class EmisionDeRecibosModel
 {
     private function armarSqlSelect($data)

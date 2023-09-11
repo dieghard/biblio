@@ -1,6 +1,6 @@
 <?php
 namespace Controller;
-require_once '../../Model/LocalidadModel.php';
+require_once '../Model/LocalidadModel.php';
 use Model\LocalidadModel;
 
 class LocalidadController
