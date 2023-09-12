@@ -11,7 +11,7 @@ class PanelModel
         require_once 'conexion.php';
     }
 
-    public function verificarUsuarios($bibliotecaID)
+    public function cantidadSocios_y_Montos($bibliotecaID)
     {
         $Coneccion = new Conexion();
         $dbConectado = $Coneccion->DBConect();
@@ -22,10 +22,8 @@ class PanelModel
         $superArray['cantidadUsuariosInactivos'] = 0;
         $superArray['saldo'] = 0;
         $bibliotecalID = $bibliotecaID;
-        /***********************************************************************************************************************************************************************************************/
-        // CANTIDAD ACTIVOS
-        /***********************************************************************************************************************************************************************************************/
 
+        // CANTIDAD ACTIVOS
         $strSql = 'SELECT count(*) as cantidad FROM socios Where Activo = "SI"';
         $strSql .= '    AND  bilbiotecaId=:bibliotecaID';
 
@@ -45,10 +43,7 @@ class PanelModel
             $trace = $e->getTrace();
             $superArray['mensaje'] = $e->getMessage().' en '.$e->getFile().' en la linea '.$e->getLine().' llamado desde '.$trace[0]['file'].' on line '.$trace[0]['line'];
         }
-        /***********************************************************************************************************************************************************************************************/
         // CANTIDAD INACTIVOS
-        /***********************************************************************************************************************************************************************************************/
-
         $strSql = 'SELECT count(*) as cantidad FROM socios Where Activo = "NO"';
         $strSql .= '    AND  bilbiotecaId=:bibliotecaID';
 
@@ -68,9 +63,7 @@ class PanelModel
             $trace = $e->getTrace();
             $superArray['mensaje'] = $e->getMessage().' en '.$e->getFile().' en la linea '.$e->getLine().' llamado desde '.$trace[0]['file'].' on line '.$trace[0]['line'];
         }
-        /***********************************************************************************************************************************************************************************************/
         // SALDO ACTIVOS
-        /***********************************************************************************************************************************************************************************************/
 
         $strSql = 'SELECT  m.socioId,m.saldo
                      from movimientos m

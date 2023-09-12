@@ -44,54 +44,60 @@ class CombosController{
 }
 
 
-if(isset($_POST["combo"])){
-        $combo = $_POST["combo"];
-}
-    else{
-        return;
-}
-if(isset($_POST["tabIndex"])){
-        $tabIndex = $_POST["tabIndex"];
-}
-if(isset($_POST["idCombo"])){
+if(isset($_POST["combo"])):
+    $combo = $_POST["combo"];
+else:
+  return;
+endif;
+
+$tabIndex = 0;
+if(isset($_POST["tabIndex"])):
+    $tabIndex = $_POST["tabIndex"];
+endif;
+
+if(isset($_POST["idCombo"])):
     $idCombo = $_POST["idCombo"];
-}
+else:
+    return;
+endif;
 
 
+$respuesta = '';
+if ($combo=='localidades'){$respuesta = comboLocalidades($tabIndex);}
+if ($combo=='sector'){$respuesta = comboSectores($tabIndex);}
+if ($combo=='provincias'){$respuesta = comboProvincias($tabIndex);}
+if ($combo=='tipoSocio'){$respuesta = combotipoSocio($tabIndex);}
+if ($combo=='Socios'){$respuesta = comboSocios($tabIndex);}
+if ($combo=='socios_abm'){$respuesta = comboSociosAbm($tabIndex,$idCombo);}
+if ($combo=='socios_impresion'){$respuesta = socios_impresion($tabIndex,$idCombo);}
 
-if ($combo=='localidades'){comboLocalidades($tabIndex);}
-if ($combo=='sector'){comboSectores($tabIndex);}
-if ($combo=='provincias'){comboProvincias($tabIndex);}
-if ($combo=='tipoSocio'){combotipoSocio($tabIndex);}
-if ($combo=='Socios'){comboSocios($tabIndex);}
-if ($combo=='socios_abm'){comboSociosAbm($tabIndex,$idCombo);}
-if ($combo=='socios_impresion'){socios_impresion($tabIndex,$idCombo);}
+echo$respuesta ;
 
 function  comboLocalidades($tabIndex ){
     $respuesta = new CombosController();
-    $respuesta->ComboLocalidad($tabIndex );
+    return $respuesta->ComboLocalidad($tabIndex );
 }
 function comboProvincias($tabIndex ){
     $respuesta = new CombosController();
-    $respuesta->comboProvincia($tabIndex );
+    return  $respuesta->comboProvincia($tabIndex );
 }
 function comboSectores($tabIndex){
     $respuesta = new CombosController();
-    $respuesta->comboSectores($tabIndex);
+    return $respuesta->comboSectores($tabIndex);
 }
 function combotipoSocio($tabIndex ){
     $respuesta = new CombosController();
-    $respuesta->comboTipoSocio($tabIndex );
+    return $respuesta->comboTipoSocio($tabIndex );
 }
 function comboSocios($tabIndex ){
     $respuesta = new CombosController();
-    $respuesta->comboSocios($tabIndex );
+    return $respuesta->comboSocios($tabIndex );
 }
 function comboSociosAbm($tabIndex,$idCombo ){
     $respuesta = new CombosController();
-    $respuesta->comboSociosAbm($tabIndex,$idCombo );
+    return $respuesta->comboSociosAbm($tabIndex,$idCombo );
 }
 function socios_impresion($tabIndex,$idCombo ){
     $respuesta = new CombosController();
-    $respuesta->socios_impresion($tabIndex,$idCombo );
+    return $respuesta->socios_impresion($tabIndex,$idCombo );
 }

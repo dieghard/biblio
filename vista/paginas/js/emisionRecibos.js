@@ -1,9 +1,9 @@
 function diadeHoy() {
-	var now = new Date();
+	const now = new Date();
 
-	var day = ("0" + now.getDate()).slice(-2);
-	var month = ("0" + (now.getMonth() + 1)).slice(-2);
-	var today = now.getFullYear() + "-" + month + "-" + day;
+	const day = ("0" + now.getDate()).slice(-2);
+	const month = ("0" + (now.getMonth() + 1)).slice(-2);
+	const today = now.getFullYear() + "-" + month + "-" + day;
 	return today;
 }
 $(document).ready(function () {
@@ -41,8 +41,8 @@ $(document).ready(function () {
 	$("#modalEmisionRecibosAbm").on("hidden.bs.modal", function (e) {
 		LlenarGrilla();
 	});
-	var theDate = new Date();
-	var currMonth = theDate.getMonth();
+	const theDate = new Date();
+	const currMonth = theDate.getMonth();
 	$("#mesDesde").val(currMonth + 1);
 	$("#mesHasta").val(currMonth + 1);
 	/// COMBO cmbSocio
@@ -67,8 +67,8 @@ $(document).ready(function () {
 	});
 });
 function LLenarComboSocios_Impresion(tabIndex) {
-	var datos = new FormData();
-	var strUrl = "../Controller/CombosController.php";
+	const datos = new FormData();
+	const strUrl = "../Controller/CombosController.php";
 	datos.append("tabIndex", tabIndex);
 	datos.append("combo", "socios_abm");
 	datos.append("idCombo", "socios_impresion");
@@ -81,7 +81,7 @@ function LLenarComboSocios_Impresion(tabIndex) {
 		processData: false,
 		success: function (respuesta) {
 			//alert(respuesta);
-			var oRta = JSON.parse(respuesta);
+			const oRta = JSON.parse(respuesta);
 
 			if (oRta.success == true) {
 				$("#comboSociosImpresion").html(oRta.combo);
@@ -92,12 +92,13 @@ function LLenarComboSocios_Impresion(tabIndex) {
 		}
 	});
 }
+
 function Impresion_de_todos_los_recibos() {
-	var socioID = $("#socios_impresion").val();
-	var mesImpresion = $("#periodoMesImpresion").val();
-	var anioImpresion = $("#periodoAnioImpresion").val();
-	var numeroReciboImpresion = $("#numeroReciboImpresion").val();
-	var sectorImpresion = $("#cmbSector").val();
+	const socioID = $("#socios_impresion").val();
+	const mesImpresion = $("#periodoMesImpresion").val();
+	const anioImpresion = $("#periodoAnioImpresion").val();
+	const numeroReciboImpresion = $("#numeroReciboImpresion").val();
+	const sectorImpresion = $("#cmbSector").val();
 	if (mesImpresion == null) {
 		mesImpresion = 0;
 	}
@@ -109,7 +110,7 @@ function Impresion_de_todos_los_recibos() {
 		anioImpresion = 0;
 	}
 
-	var strUrl = "paginas/recibos/impresionrecibos.php";
+	const strUrl = "paginas/recibos/impresionrecibos.php";
 	$("#tabla").html(
 		'<div class="loading"><h7>Aguarde Un momento, por favor...</h7><img src="../vista/images/save.gif"  width="50" height="50" alt="loading"/></div>'
 	);
@@ -128,13 +129,13 @@ function Impresion_de_todos_los_recibos() {
 		sectorImpresion;
 }
 function LlenarGrilla() {
-	var socioID = $("#comboSociosfiltro").val();
-	var mesDesde = $("#mesDesdeFiltro").val();
-	var anioDesde = $("#anioDesdeFiltro").val();
-	var mesHasta = $("#mesHastaFiltro").val();
-	var anioHasta = $("#anioHastaFiltro").val();
-	var strUrl = "../Controller/EmisionDeRecibosController.php";
-	var datos = new FormData();
+	const socioID = $("#comboSociosfiltro").val();
+	const mesDesde = $("#mesDesdeFiltro").val();
+	const anioDesde = $("#anioDesdeFiltro").val();
+	const mesHasta = $("#mesHastaFiltro").val();
+	const anioHasta = $("#anioHastaFiltro").val();
+	const strUrl = "../Controller/EmisionDeRecibosController.php";
+	const datos = new FormData();
 
 	datos.append("socioID", socioID);
 	datos.append("mesDesde", mesDesde);
@@ -155,7 +156,7 @@ function LlenarGrilla() {
 		processData: false,
 		success: function (respuesta) {
 			console.log(respuesta);
-			var oRta = JSON.parse(respuesta);
+			const oRta = JSON.parse(respuesta);
 			console.log(oRta);
 			if (oRta.success == true) {
 				$("#tabla").html(oRta.tabla);
@@ -188,7 +189,7 @@ function LlenarGrilla() {
 	});
 }
 function ReciboNuevo() {
-	var now = new Date();
+	const now = new Date();
 	LLenarComboSocios_abm(4);
 	$("#id").val("0");
 	$("#fecha").val(diadeHoy());
@@ -206,52 +207,43 @@ function imprimirRecibos() {
 	$("#modalImpresionRecibos").modal("show");
 }
 function PasarDatosEmision() {
-	var socioID = $("#socios_abm").val();
-	var monto = $("#monto").val();
-	if (socioID == "") {
-		socioID = 0;
-	}
-	if (monto == "") {
-		monto = 0;
-	}
+	const socioID = $("#socios_abm").val();
+	const monto = $("#monto").val();
 
-	var emision = {
+	const emision = {
 		fecha: $("#fecha").val(),
 		periodoMes: $("#periodoMes").val(),
 		periodoAnio: $("#periodoAnio").val(),
-		socioId: socioID,
+		socioId: socioID || 0,
 		observaciones: $("#observaciones").val(),
 		seguir: true,
 		mensaje: "",
-		monto: monto
+		monto: monto || 0 // Asigna 0 si monto es vacío o nulo
 	};
 	return emision;
 }
-function Validar(emision) {
-	blnContinuar = true;
-	if (emision.fecha != null && emision.fecha.length <= 0) {
-		emision.mensaje = emision.mensaje + "Debe ingresar una fecha</br>";
-		emision.seguir = false;
-		blnContinuar = false;
-	}
 
-	if (emision.periodoMes != null && emision.periodoMes.length <= 0) {
-		emision.mensaje = emision.mensaje + "Debe ingresar un mes</br>";
-		emision.seguir = false;
-		blnContinuar = false;
-	}
-	if (emision.periodoAnio != null && emision.periodoAnio <= 0) {
-		emision.mensaje = emision.mensaje + "Debe ingresar un año</br>";
-		emision.seguir = false;
-		blnContinuar = false;
-	}
+function Validar(emision) {
+	emision.seguir = true;
+
+	emision.mensaje += !emision.fecha
+		? ((emision.seguir = false), "Debe ingresar un fecha</br>")
+		: "";
+
+	emision.mensaje += !emision.periodoMes
+		? ((emision.seguir = false), "Debe ingresar un mes</br>")
+		: "";
+
+	emision.mensaje += !emision.periodoAnio
+		? ((emision.seguir = false), "Debe ingresar un año</br>")
+		: "";
 
 	return emision;
 }
+
 function Guardar_Datos() {
-	////CREO EL OBJETO
-	var emision = PasarDatosEmision();
-	///Valido los datos de la emision
+	let emision = PasarDatosEmision();
+
 	emision = Validar(emision);
 
 	if (emision.seguir == false) {
@@ -262,14 +254,15 @@ function Guardar_Datos() {
 		);
 		return false;
 	}
-	///SI PASA LO STRINGIFICO
+	let titulo = "";
+	let content = "";
 	if (emision.socioId == 0) {
-		var titulo = "¿Guardar el / los  recibos? ";
-		var content =
+		titulo = "¿Guardar el / los  recibos? ";
+		content =
 			"AL NO SELECCIONAR NINGUN SOCIO SE GENERARA LOS RECIBOS PARA TODOS LOS SOCION, ¿Continuar?";
 	} else {
-		var titulo = "¿Guardar el / los  recibos? ";
-		var content = "¿Guardar el / los  recibos?";
+		titulo = "¿Guardar el / los  recibos? ";
+		content = "¿Guardar el / los  recibos?";
 	}
 	$.confirm({
 		theme: "Modern",
@@ -290,12 +283,12 @@ function Guardar_Datos() {
 }
 
 function GuardarRecibos(emision) {
-	var oEmision = JSON.stringify(emision);
-	var datos = new FormData();
+	const oEmision = JSON.stringify(emision);
+	const datos = new FormData();
 	datos.append("ACTION", "ingresoEmision");
 	datos.append("datosjson", oEmision);
 	////LO PASO CON FORM DATA
-	var strUrl = "../Controller/EmisionDeRecibosController.php";
+	const strUrl = "../Controller/EmisionDeRecibosController.php";
 	$.ajax({
 		url: strUrl,
 		method: "POST",
@@ -304,8 +297,10 @@ function GuardarRecibos(emision) {
 		contentType: false,
 		processData: false,
 		success: function (respuesta) {
-			var oRta = JSON.parse(respuesta);
+			const oRta = JSON.parse(respuesta);
 			if (oRta.success == true) {
+				console.log(oRta);
+				alert("Cantidad de registros nuevos:" + oRta.registrosNuevos);
 				$("#modalEmisionRecibosAbm").modal("toggle");
 				LlenarGrilla();
 			} else {
@@ -314,11 +309,10 @@ function GuardarRecibos(emision) {
 		}
 	});
 }
-///Eliminar Socio
+
 function fnProcesaEliminar(x) {
-	var id = $(x).closest("tr").data("id");
-	////CREO EL OBJETO
-	var socio = { id: id };
+	const id = $(x).closest("tr").data("id");
+	const socio = { id: id };
 
 	$.confirm({
 		theme: "Modern",
@@ -338,14 +332,15 @@ function fnProcesaEliminar(x) {
 		}
 	});
 }
+
 function EliminarRecibo(Recibo) {
 	///SI PASA LO STRINGIFICO
-	var oRecibo = JSON.stringify(Recibo);
-	var datos = new FormData();
+	const oRecibo = JSON.stringify(Recibo);
+	const datos = new FormData();
 	datos.append("ACTION", "eliminarSocio");
 	datos.append("datosjson", oRecibo);
 	////LO PASO CON FORM DATA
-	var strUrl = "../Controller/userController.php";
+	const strUrl = "../Controller/userController.php";
 	$.ajax({
 		url: strUrl,
 		method: "POST",
@@ -354,7 +349,7 @@ function EliminarRecibo(Recibo) {
 		cache: false,
 		processData: false,
 		success: function (respuesta) {
-			var oRta = JSON.parse(respuesta);
+			const oRta = JSON.parse(respuesta);
 			if (oRta.success == true) {
 				LlenarGrilla();
 			} else {
@@ -363,9 +358,10 @@ function EliminarRecibo(Recibo) {
 		}
 	});
 }
+
 function LLenarComboSocios_abm(tabIndex) {
-	var datos = new FormData();
-	var strUrl = "../Controller/CombosController.php";
+	const datos = new FormData();
+	const strUrl = "../Controller/CombosController.php";
 
 	datos.append("tabIndex", tabIndex);
 	datos.append("combo", "socios_abm");
@@ -379,9 +375,7 @@ function LLenarComboSocios_abm(tabIndex) {
 		contentType: false,
 		processData: false,
 		success: function (respuesta) {
-			//alert(respuesta);
-			var oRta = JSON.parse(respuesta);
-
+			const oRta = JSON.parse(respuesta);
 			if (oRta.success == true) {
 				$("#divcomboSociosabm").html(oRta.combo);
 				$("#socios_abm").select2();
@@ -397,8 +391,8 @@ function LLenarComboSocios_abm(tabIndex) {
 }
 
 function LLenarComboSocios_filtro(tabIndex) {
-	var datos = new FormData();
-	var strUrl = "../Controller/CombosController.php";
+	const datos = new FormData();
+	const strUrl = "../Controller/CombosController.php";
 	datos.append("tabIndex", tabIndex);
 	datos.append("combo", "socios_abm");
 	datos.append("idCombo", "comboSociosfiltro");
@@ -410,8 +404,7 @@ function LLenarComboSocios_filtro(tabIndex) {
 		contentType: false,
 		processData: false,
 		success: function (respuesta) {
-			//alert(respuesta);
-			var oRta = JSON.parse(respuesta);
+			const oRta = JSON.parse(respuesta);
 			if (oRta.success == true) {
 				$("#comboSocios").html(oRta.combo);
 				if ($("#comboSocios").length > 0) {

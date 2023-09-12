@@ -22,36 +22,14 @@ class EmisionDeRecibosController
        return $this->MP->IngresoEmisionRecibos($bibliotecaID, $misDatosJSON);
     }
 
-    /* ******************************************************************************
-    PAGOS!!!!!
-    ***** */
+    /*  PAGOS!!!!! */
+
     public function ingresoEmisionPagos($bibliotecaID, $misDatosJSON)
     {
        return  $this->MP->IngresoEmisionPagos($bibliotecaID, $misDatosJSON);
 
     }
 }
-
-$respuesta = '';
-
-if (isset($_POST['ACTION'])) {
-    $accion = $_POST['ACTION'];
-} else {
-    echo $respuesta;
-  return;
-}
-
-if ($accion == 'llenarGrilla') {
-    $respuesta = LlenarGrilla();
-}
-if ($accion == 'ingresoEmision') {
-    $respuesta = IngresoEmisionRecibos();
-}
-if ($accion == 'ingresoPago') {
-    $respuesta = ingresoEmisionPagos();
-}
-
-echo $respuesta;
 
 function LlenarGrilla()
 {
@@ -69,6 +47,7 @@ function LlenarGrilla()
 
     return $respuesta->llenarGrilla($bibliotecaID,$data);
 }
+
 function IngresoEmisionRecibos()
 {
     $respuesta = new EmisionDeRecibosController();
@@ -81,13 +60,10 @@ function IngresoEmisionRecibos()
 
     $misDatosJSON = json_decode($_POST['datosjson']);
 
-    //$superArray['$misDatosJSON'] = $misDatosJSON;
-    //$superArray['$bibliotecaID'] = $bibliotecaID ;
-
-    //echo json_encode($superArray);
-    return $respuesta->ingresoEmisionRecibos($bibliotecaID, $misDatosJSON);
+    return $respuesta->IngresoEmisionRecibos($bibliotecaID, $misDatosJSON);
 }
-  function ingresoEmisionPagos()
+
+function ingresoEmisionPagos()
   {
       $respuesta = new EmisionDeRecibosController();
 
@@ -99,9 +75,26 @@ function IngresoEmisionRecibos()
 
       $misDatosJSON = json_decode($_POST['datosjson']);
 
-      //$superArray['$misDatosJSON'] = $misDatosJSON;
-      //$superArray['$bibliotecaID'] = $bibliotecaID ;
-
-      //echo json_encode($superArray);
       return $respuesta->ingresoEmisionPagos($bibliotecaID, $misDatosJSON);
   }
+
+  $respuesta = '';
+
+  if (isset($_POST['ACTION'])) {
+      $accion = $_POST['ACTION'];
+  } else {
+      echo $respuesta;
+    return;
+  }
+
+  if ($accion == 'llenarGrilla') :
+      $respuesta = LlenarGrilla();
+  endif;
+  if ($accion == 'ingresoEmision') :
+      $respuesta = IngresoEmisionRecibos();
+  endif;
+  if ($accion == 'ingresoPago') :
+      $respuesta = ingresoEmisionPagos();
+  endif;
+
+  echo $respuesta;

@@ -1,34 +1,29 @@
 <?php
 namespace Controllers;
 
-require_once '../../Model/PanelModel.php';
+require_once '../Model/PanelModel.php';
 use Model\PanelModel;
 
 class PanelController
 {
-  private $model  ;
-  public function __construct()
-  {
-    $model = new PanelModel();
+  private $model ;
+  public function __construct(){
+    $this->model = new PanelModel();
   }
 
-    public function verificarUsuarios($bibliotecaID)
-    {
-        return  $this->model->verificarUsuarios($bibliotecaID);
-
-    }
-
+  public function verificarUsuarios($bibliotecaID){
+      return  $this->model->cantidadSocios_y_Montos($bibliotecaID);
   }
 
-
-
-if (isset($_POST['ACTION'])) {
-    $accion = $_POST['ACTION'];
-} else {
-    return;
 }
 
-if ($accion == 'cantidadSocios') {
+if (isset($_POST['ACTION'])) :
+    $accion = $_POST['ACTION'];
+else :
+    return;
+endif;
+
+if ($accion == 'cantidadSocios') :
     $panel = new PanelController();
     if (session_status() == PHP_SESSION_NONE) {
         session_start();
@@ -39,4 +34,4 @@ if ($accion == 'cantidadSocios') {
 
     $respuesta = $panel->verificarUsuarios($bibliotecaID);
     echo $respuesta;
-}
+endif;
