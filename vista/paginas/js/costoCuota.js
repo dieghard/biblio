@@ -4,6 +4,8 @@ $(document).ready(function () {
 	$("#error").html("");
 	$("#btnCerrar").on("click", function () {});
 	$("#btnCerrarAbajo").on("click", function () {});
+	$("#btnCerrarAbajoMonto").on("click", function () {});
+
 	$("#botonOcultar").trigger("click");
 
 	$("#btnGuardar").click(function () {

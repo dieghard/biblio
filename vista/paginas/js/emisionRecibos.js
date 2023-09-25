@@ -9,24 +9,42 @@ function diadeHoy() {
 $(document).ready(function () {
 	///BOTON CERRAR
 	LlenarGrilla();
+	console.log("LlenarGrilla()");
 	LLenarComboSocios_abm(4);
+	console.log("LLenarComboSocios_abm");
 	LLenarComboSocios_Impresion(3);
+	console.log("LLenarComboSocios_Impresion");
 	LLenarComboSocios_filtro();
+	console.log("LLenarComboSocios_filtro();");
+
 	$("#fecha").val(diadeHoy());
 
 	/* //////////////////////////////////////////////////////////////////////////////// */
 	$.getScript("paginas/js/combos.js", function (data, textStatus, $xhr) {
 		LLenarComboSector(5);
+		console.log("LLenarComboSector();");
 	});
 	$("#btnCerrar").on("click", function () {});
 	$("#btnCerrarAbajo").on("click", function () {});
+	$("#btnCerrarAbajoMonto").on("click", function () {});
+
 	$("#botonOcultar").trigger("click");
+
 	$("#btnGuardar").click(function () {
 		Guardar_Datos();
 	});
+
+	$("#btnGuardarMonto").click(function () {
+		Guardar_DatosMonto();
+	});
+
 	$("#btnNuevo").click(function () {
 		//alert('PASE X AQUI');
 		ReciboNuevo();
+	});
+	$("#btnNuevoMonto").click(function () {
+		//alert('PASE X AQUI');
+		ReciboNuevoMonto();
 	});
 	$("#btnImprimir").click(function () {
 		imprimirRecibos();
@@ -41,6 +59,10 @@ $(document).ready(function () {
 	$("#modalEmisionRecibosAbm").on("hidden.bs.modal", function (e) {
 		LlenarGrilla();
 	});
+	$("#modalEmisionRecibosAbmMonto").on("hidden.bs.modal", function (e) {
+		LlenarGrilla();
+	});
+
 	const theDate = new Date();
 	const currMonth = theDate.getMonth();
 	$("#mesDesde").val(currMonth + 1);
@@ -66,6 +88,7 @@ $(document).ready(function () {
 		}
 	});
 });
+
 function LLenarComboSocios_Impresion(tabIndex) {
 	const datos = new FormData();
 	const strUrl = "../Controller/CombosController.php";
@@ -188,6 +211,7 @@ function LlenarGrilla() {
 		}
 	});
 }
+
 function ReciboNuevo() {
 	const now = new Date();
 	LLenarComboSocios_abm(4);
@@ -195,18 +219,44 @@ function ReciboNuevo() {
 	$("#fecha").val(diadeHoy());
 	$("#periodoMes").val(now.getMonth() + 1);
 	$("#periodoAnio").val(now.getFullYear());
-
 	$("#socios_abm").val(0).trigger("change.select2");
-
 	$("#observaciones").val("");
-	$("#observaciosnes").val("");
 	$("#modalEmisionRecibosAbm").modal("show");
 }
-
+function ReciboNuevoMonto() {
+	const now = new Date();
+	LLenarComboSocios_abm(4);
+	$("#id").val("0");
+	$("#fecha").val(diadeHoy());
+	$("#periodoMes").val(now.getMonth() + 1);
+	$("#periodoAnio").val(now.getFullYear());
+	$("#socios_abm").val(0).trigger("change.select2");
+	$("#observaciones").val("");
+	$("#monto").val("0");
+	$("#modalEmisionRecibosAbmMonto").modal("show");
+}
 function imprimirRecibos() {
 	$("#modalImpresionRecibos").modal("show");
 }
+
 function PasarDatosEmision() {
+	const socioID = $("#socios_abm").val();
+	const monto = 0;
+
+	const emision = {
+		fecha: $("#fecha").val(),
+		periodoMes: $("#periodoMes").val(),
+		periodoAnio: $("#periodoAnio").val(),
+		socioId: socioID || 0,
+		observaciones: $("#observaciones").val(),
+		seguir: true,
+		mensaje: "",
+		monto: monto || 0 // Asigna 0 si monto es vacío o nulo
+	};
+	return emision;
+}
+
+function PasarDatosEmisionMonto() {
 	const socioID = $("#socios_abm").val();
 	const monto = $("#monto").val();
 
@@ -239,6 +289,65 @@ function Validar(emision) {
 		: "";
 
 	return emision;
+}
+
+function ValidarMonto(emision) {
+	emision.seguir = true;
+
+	emision.mensaje += !emision.fecha
+		? ((emision.seguir = false), "Debe ingresar un fecha</br>")
+		: "";
+
+	emision.mensaje += !emision.periodoMes
+		? ((emision.seguir = false), "Debe ingresar un mes</br>")
+		: "";
+
+	emision.mensaje += !emision.periodoAnio
+		? ((emision.seguir = false), "Debe ingresar un año</br>")
+		: "";
+
+	emision.mensaje +=
+		emision.socioId == 0
+			? ((emision.seguir = false), "Debe seleccionar un socio</br>")
+			: "";
+	return emision;
+}
+
+function Guardar_DatosMonto() {
+	let emision = PasarDatosEmisionMonto();
+
+	emision = ValidarMonto(emision);
+
+	if (emision.seguir == false) {
+		$("#error").html(
+			'<div class="alert alert-danger alert-dismissible fade show" role="alert"><strong>Se econtraron errores!</strong></br>' +
+				emision.mensaje +
+				'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+		);
+		return false;
+	}
+	let titulo = "";
+	let content = "";
+
+	titulo = "¿Guardar el recibo? ";
+	content = "¿Guardar el recibo?";
+
+	$.confirm({
+		theme: "Modern",
+		title: titulo,
+		content: content,
+		buttons: {
+			Confirmar: function () {
+				GuardarRecibosMonto(emision);
+			},
+			Cancelar: {
+				//text: 'Cancelar', // With spaces and symbols
+				action: function () {
+					return;
+				}
+			}
+		}
+	});
 }
 
 function Guardar_Datos() {
@@ -302,6 +411,34 @@ function GuardarRecibos(emision) {
 				console.log(oRta);
 				alert("Cantidad de registros nuevos:" + oRta.registrosNuevos);
 				$("#modalEmisionRecibosAbm").modal("toggle");
+				LlenarGrilla();
+			} else {
+				$("#cartel").html(oRta.mensaje);
+			}
+		}
+	});
+}
+
+function GuardarRecibosMonto(emision) {
+	const oEmision = JSON.stringify(emision);
+	const datos = new FormData();
+	datos.append("ACTION", "ingresoEmision");
+	datos.append("datosjson", oEmision);
+	////LO PASO CON FORM DATA
+	const strUrl = "../Controller/EmisionDeRecibosController.php";
+	$.ajax({
+		url: strUrl,
+		method: "POST",
+		data: datos,
+		cache: false,
+		contentType: false,
+		processData: false,
+		success: function (respuesta) {
+			const oRta = JSON.parse(respuesta);
+			if (oRta.success == true) {
+				console.log(oRta);
+				alert("Cantidad de registros nuevos:" + oRta.registrosNuevos);
+				$("#modalEmisionRecibosAbmMonto").modal("toggle");
 				LlenarGrilla();
 			} else {
 				$("#cartel").html(oRta.mensaje);

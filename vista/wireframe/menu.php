@@ -11,7 +11,7 @@
         </li>
         <li class="nav-divider"></li>
         <!-- ------------------------------------------------------------------------------------>
-        <!-- MENU MOVIMIENTOS---->   
+        <!-- MENU MOVIMIENTOS---->
         <li>
           <a href="javascript:;">
             <span class="nav-icon">
@@ -43,7 +43,7 @@
             <span class="nav-title">Socios</span>
             <span class="nav-tools"><i class="fa fa-fw arrow"></i></span>
           </a>
-          <!-- SUB MENU SOCIOS  -->    
+          <!-- SUB MENU SOCIOS  -->
           <ul class="nav nav-sub nav-stacked">
             <li>
               <a href="../vista/index.php?controlador=socios">Administración</a>
@@ -52,15 +52,15 @@
             <li>
               <a href="../vista/index.php?controlador=costoCuota">Administración Costo Cuota</a>
             </li>
-          
+
           </ul>
-        
+
         </li>
                 <!-- END: MENU SOCIOS -->
         <li class="nav-divider"></li>
 <!-- ------------------------------------------------------------------------------------>
 <!-- ------------------------------------------------------------------------------------>
-        <!-- MENU GENERAL---->   
+        <!-- MENU GENERAL---->
         <li>
           <a href="javascript:;">
             <span class="nav-icon">

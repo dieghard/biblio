@@ -6,19 +6,19 @@ require_once "conexion.php";
 
 class Modelo{
 
-	public function ControladorLinksModelo($enlaces){
+    public function ControladorLinksModelo($enlaces){
 
-			if ( $enlaces=='panel' ||
-				 $enlaces =='turnos' ||
-				 $enlaces =='sectores' ||
-				 $enlaces =='inhabilitacion'
+            if ( $enlaces=='panel' ||
+                 $enlaces =='turnos' ||
+                 $enlaces =='sectores' ||
+                 $enlaces =='inhabilitacion'
                             )
 
                         {
-			$module = $enlaces .".php";
+            $module = $enlaces .".php";
                             }
                         else {
-				$module = "panel.php";
+                $module = "panel.php";
                         }
 
                         if ($enlaces=='logout'){
@@ -29,11 +29,11 @@ class Modelo{
                         else {
                             return $module;
                         }
-	}
+    }
 
-         public function __construct(){
-            require_once "conexion.php";
+  public function __construct(){
+    require_once "conexion.php";
 
-            }
+    }
 
   }

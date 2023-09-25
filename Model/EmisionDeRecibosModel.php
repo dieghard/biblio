@@ -159,12 +159,12 @@ class EmisionDeRecibosModel
   }
 
   public function IngresoEmisionRecibos($bibliotecaID, $data){
-      $conexion = new Conexion();
-      $dbConectado = $conexion->DBConect();
-      $Ejecucion = '0';
-      header('Content-Type: text/html;charset=utf-8');
-      $superArray['success'] = true;
-      $superArray['mensaje'] = '';
+    $conexion = new Conexion();
+    $dbConectado = $conexion->DBConect();
+    $Ejecucion = '0';
+    header('Content-Type: text/html;charset=utf-8');
+    $superArray['success'] = true;
+    $superArray['mensaje'] = '';
 
     // Paso 1: Obtener el número de registros existentes
     $countStmtInicial = $dbConectado->prepare("SELECT COUNT(*) FROM MOVIMIENTOS WHERE bibliotecaId = :bibliotecaId AND ReciboCobro = 'recibo'");
