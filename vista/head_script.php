@@ -12,4 +12,5 @@
     <link id="theme-list" rel="stylesheet" href="assets/css/theme-peter-river.min.css" />
     <link id="theme-list" rel="stylesheet" href="assets/css/AdminLTE.min.css" />
     <link rel="stylesheet" href="assets/css/animate.css" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   </head>

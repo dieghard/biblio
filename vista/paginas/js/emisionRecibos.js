@@ -6,7 +6,18 @@ function diadeHoy() {
 	const today = now.getFullYear() + "-" + month + "-" + day;
 	return today;
 }
+function generarColorAleatorio() {
+	return "#" + Math.floor(Math.random() * 16777215).toString(16);
+}
+
 $(document).ready(function () {
+	// Genera un color hexadecimal aleatorio
+
+	// Aplica el color aleatorio a la variable CSS
+	document.documentElement.style.setProperty(
+		"--color-random",
+		generarColorAleatorio()
+	);
 	///BOTON CERRAR
 	LlenarGrilla();
 	console.log("LlenarGrilla()");
@@ -223,6 +234,7 @@ function ReciboNuevo() {
 	$("#observaciones").val("");
 	$("#modalEmisionRecibosAbm").modal("show");
 }
+
 function ReciboNuevoMonto() {
 	const now = new Date();
 	LLenarComboSocios_abm(4);
@@ -235,6 +247,7 @@ function ReciboNuevoMonto() {
 	$("#monto").val("0");
 	$("#modalEmisionRecibosAbmMonto").modal("show");
 }
+
 function imprimirRecibos() {
 	$("#modalImpresionRecibos").modal("show");
 }
@@ -547,6 +560,102 @@ function LLenarComboSocios_filtro(tabIndex) {
 				if ($("#comboSocios").length > 0) {
 					$("#comboSociosfiltro").select2();
 				}
+			} else {
+				$("#cartel").html(oRta.mensaje);
+			}
+		}
+	});
+}
+
+function realizarPago(btn) {
+	// Accede a la fila completa (tr) desde el botón (this)
+	var fila = btn.closest("tr");
+
+	// Obtiene los valores de los atributos data- de la fila
+	var id = fila.getAttribute("data-id");
+	var socioId = fila.getAttribute("data-socioid");
+	var socio = fila.getAttribute("data-socio");
+	var fecha = fila.getAttribute("data-fecha");
+	var periodoMes = fila.getAttribute("data-periodomes");
+	var periodoAnio = fila.getAttribute("data-periodoanio");
+	var debe = fila.getAttribute("data-debe");
+	var haber = fila.getAttribute("data-haber");
+	var saldo = fila.getAttribute("data-saldo");
+	var pagoExistente = fila.getAttribute("data-pago-existente");
+
+	// Hacer lo que necesites con los datos
+	console.log("ID: " + id);
+	console.log("Socio ID: " + socioId);
+	console.log("Socio: " + socio);
+	console.log("Fecha: " + fecha);
+	console.log("Periodo Mes: " + periodoMes);
+	console.log("Periodo Año: " + periodoAnio);
+	console.log("Debe: " + debe);
+	console.log("Haber: " + haber);
+	console.log("Saldo: " + saldo);
+	console.log("Pago Existente: " + pagoExistente);
+	// Obtener la fecha de hoy en formato 'yyyy-mm-dd'
+	var fechaHoy = new Date().toISOString().slice(0, 10);
+
+	var emision = {
+		fecha: fechaHoy,
+		periodoMes: periodoMes,
+		periodoAnio: periodoAnio,
+		socioId: socioId,
+		numeroReciboPagado: id,
+		haber: debe,
+		observaciones: "",
+		seguir: true,
+		mensaje: ""
+	};
+	var titulo =
+		"¿Guardar el pago para el socio:" +
+		socio +
+		" para el perdiodo:" +
+		periodoMes +
+		"/" +
+		periodoAnio +
+		"?";
+	var content = "¿Guardar el pago del comprobante:" + id + "?";
+	$.confirm({
+		theme: "Modern",
+		title: titulo,
+		content: content,
+		buttons: {
+			Confirmar: function () {
+				GuardarPagoBoton(emision);
+			},
+			Cancelar: {
+				//text: 'Cancelar', // With spaces and symbols
+				action: function () {
+					return;
+				}
+			}
+		}
+	});
+}
+
+function GuardarPagoBoton(emision) {
+	var oEmision = JSON.stringify(emision);
+	var datos = new FormData();
+
+	datos.append("ACTION", "ingresoPago");
+	datos.append("datosjson", oEmision);
+	////LO PASO CON FORM DATA
+	var strUrl = "../Controller/EmisionDeRecibosController.php";
+	$.ajax({
+		url: strUrl,
+		method: "POST",
+		data: datos,
+		cache: false,
+		contentType: false,
+		processData: false,
+		success: function (respuesta) {
+			var oRta = JSON.parse(respuesta);
+
+			if (oRta.success == true) {
+				$("#error").html("");
+				LlenarGrilla();
 			} else {
 				$("#cartel").html(oRta.mensaje);
 			}
