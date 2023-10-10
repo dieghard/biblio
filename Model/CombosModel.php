@@ -244,6 +244,53 @@ class CombosModel
 
         return json_encode($superArray);
     }
+
+    public function comboRecibosConSaldo($tabIndex,$idCombo,int $socioId){
+      $Coneccion = new Conexion();
+      $dbConectado = $Coneccion->DBConect();
+      $superArray['success'] = true;
+      $superArray['mensaje'] = '';
+      $superArray['combo'] = '';
+      $superArray['sql'] = '';
+      if (session_status() == PHP_SESSION_NONE) {
+          session_start();
+      }
+
+      header('Content-Type: text/html;charset=utf-8');
+       $strSql = "SELECT mov.id,IFNULL(mov.debe,0) -  IFNULL((SELECT haber FROM movimientos WHERE  NumeroReciboPagado = mov.id  AND Eliminado !='SI'),0)  AS saldoTotal
+        FROM movimientos mov
+        INNER JOIN socios S on S.id = mov.socioId
+        WHERE 1= 1
+        AND IFNULL(mov.Eliminado,'NO') != 'SI'
+        AND ReciboCobro = 'recibo'
+        AND mov.socioID = ". $socioId ."  HAVING saldoTotal >0";
+        $superArray['sql'] = $strSql;
+        try {
+            $stmt = $dbConectado->prepare($strSql);
+            $stmt->execute();
+            $registro = $stmt->fetchAll();
+            $combo = '<select id="'.$idCombo.'" style="width:100%;" data-placeholder="Seleccione un recibo" ><option value=0>Seleccione recibo </option>';
+
+            if ($registro) {
+                /* obtener los valores */
+                foreach ($registro  as $row) {
+                    $combo .= '<option value='.$row["id"].'>'.$row["id"].'</option>';
+                }
+            }
+            $combo .= '</select>';
+            $superArray['combo'] = $combo;
+
+            return json_encode($superArray);
+        } catch (Exception $e) {
+            $trace = $e->getTrace();
+            $superArray['success'] = false;
+            $superArray['mensaje'] = $e->getMessage().' en '.$e->getFile().' en la linea '.$e->getLine().' llamado desde '.$trace[0]['file'].' on line '.$trace[0]['line'];
+        }
+        $Coneccion = null;
+
+        return json_encode($superArray);
+    }
+
     public function ComboSociosAbm($tabIndex,$idCombo)
     {
         $Coneccion = new Conexion();
@@ -287,4 +334,6 @@ class CombosModel
 
         return json_encode($superArray);
     }
+
+
 }

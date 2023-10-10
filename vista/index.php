@@ -29,6 +29,8 @@ if (!isset($_SESSION['usuario'])) {
 <html lang="es">
 <?php   include "head_script.php" ?>;
 
+
+
 <body class="dark-mode sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed sidebar-closed sidebar-collapse">
   <!-- begin .app -->
   <div class="app">
@@ -54,8 +56,6 @@ if (!isset($_SESSION['usuario'])) {
                     include 'paginas/panel.php';
                 } elseif ($pagina == 'emisionderecibos') {
                     include 'paginas/emisionderecibos_abm.php';
-                } elseif ($pagina == 'pagosRecibos') {
-                    include 'paginas/pagosRecibos_abm.php';
                 } elseif ($pagina == 'socios') {
                     include 'paginas/users_abm.php';
                 } elseif ($pagina == 'provincias') {
@@ -78,6 +78,6 @@ if (!isset($_SESSION['usuario'])) {
       <?php
       include 'wireframe/footer.php';
       include 'footer_script.php'; ?>
-      <script src="paginas/js/panel.js"></script>
+
 </body>
 </html>

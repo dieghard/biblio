@@ -1,7 +1,8 @@
 <?php
 
 require 'fpdf/fpdf.php';
-require_once './modelo/conexion.php';
+require_once '../../../model/conexion.php';
+use Model\Conexion;
 
 $action= $_GET['ACTION'];
 
@@ -31,12 +32,15 @@ $strSql = "SELECT mov.id,
                 mov.socioId,
                 mov.debe,
                 mov.haber,
-                (select saldo from movimientos where socioId = mov.socioId order by id DESC  limit 1)  as saldo
+            IFNULL(mov.debe,0) -  IFNULL((SELECT haber FROM movimientos WHERE  NumeroReciboPagado = mov.id  AND Eliminado !='SI'),0)  AS saldo
             FROM movimientos mov
             INNER join socios S on S.id = mov.socioId
             INNER join tiposocio tS on tS.id = S.tipoSocioId
             INNER join sector se on se.id = S.sectorid
-            WHERE IFNULL(mov.Eliminado,'NO')='NO' ";
+            WHERE IFNULL(mov.Eliminado,'NO')='NO'
+            AND ReciboCobro = 'recibo'
+            AND mov.id not in(select NumeroReciboPagado FROM movimientos where ReciboCobro='cobro')";
+
         if ($socioID>0){
             $strSql .= " AND S.id=" .$socioID;
         }
@@ -52,6 +56,7 @@ $strSql = "SELECT mov.id,
         if ($sectorImpresion>0) {
             $strSql .= " AND S.sectorid=" .$sectorImpresion;
         }
+    // Agrega la condición para filtrar los registros con saldo mayor que 0
     //echo    ($strSql);
     $coneccion = new Conexion();
     $dbConectado = $coneccion->DBConect();

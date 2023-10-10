@@ -65,26 +65,23 @@ class PanelModel
         }
         // SALDO ACTIVOS
 
-        $strSql = 'SELECT  m.socioId,m.saldo
-                     from movimientos m
-                    inner join socios s on s.id = m.socioId
-                 Where 1= 1
-                        AND ifnull(m.Eliminado,"NO") <>"SI"
-                        AND  ifnull(s.activo,"NO")="SI"
-                        AND  bilbiotecaId=:bibliotecaID
-                     GROUP by m.socioId';
+        $strSql = "SELECT IFNULL(SUM(IFNULL(mov.debe,0) -
+                   IFNULL((SELECT haber FROM movimientos WHERE  NumeroReciboPagado = mov.id  AND Eliminado !='SI'),0)),0)  AS saldo
+                  FROM movimientos mov
+                  inner join socios s on s.id = mov.socioId
+                  Where 1= 1
+                  AND ifnull(mov.Eliminado,'NO') <>'SI'
+                  AND  ifnull(s.activo,'NO')='SI'
+                        AND  bilbiotecaId=:bibliotecaID";
         $superArray['sql'] = $strSql;
         try {
             $stmt = $dbConectado->prepare($strSql);
             $stmt->bindParam(':bibliotecaID', $bibliotecalID, PDO::PARAM_INT);
             $stmt->execute();
-            $registro = $stmt->fetchAll();
-
-            if ($registro) {
-                foreach ($registro  as $row) {
-                    $superArray['saldo'] += $row['saldo'];
-                }
-            }
+            $registro = $stmt->fetch(PDO::FETCH_ASSOC); // Usamos fetch() en lugar de fetchAll()
+            if ($registro):
+              $superArray['saldo'] = $registro['saldo']; // Accedemos al valor 'saldo'
+            endif;
         } catch (Exception $e) {
             $superArray['success'] = false;
             $trace = $e->getTrace();

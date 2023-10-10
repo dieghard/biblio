@@ -32,6 +32,11 @@
           </div>
         </div>
 
+        <div class="form-group">
+          <label for="socios">Socio:</label>
+          <div id="divcomboSociosabmRecibos"></div> <!-- Se llena mediante ajax -->
+        </div>
+
 
         <div class="form-group">
           <div class="input-group">

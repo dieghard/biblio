@@ -1,7 +1,8 @@
-$(document).ready(function () {
+window.addEventListener("load", (event) => {
 	///BOTON CERRAR
 	llenarData();
 });
+
 function llenarData() {
 	var strUrl = "../Controller/PanelController.php";
 	var datos = new FormData();

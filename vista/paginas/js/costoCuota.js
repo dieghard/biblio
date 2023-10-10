@@ -1,4 +1,4 @@
-$(document).ready(function () {
+window.addEventListener("load", (event) => {
 	///BOTON CERRAR
 	LlenarGrilla();
 	$("#error").html("");

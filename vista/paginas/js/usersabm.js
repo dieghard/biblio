@@ -171,6 +171,7 @@ function fnProcesaEditar(x) {
 
 	$("#modalUsers2").modal("show");
 }
+
 function LlenarGrilla() {
 	nombre = $("#user").val();
 
@@ -178,10 +179,13 @@ function LlenarGrilla() {
 	var datos = new FormData();
 	datos.append("bibliotecaID", "llenarGrilla");
 	datos.append("ACTION", "llenarGrilla");
+
 	$("#tabla").html(
 		'<div class="loading"><h7>Aguarde Un momento, por favor...</h7><img src="../vista/images/save.gif"  width="50" height="50" alt="loading"/></div>'
 	);
+
 	$("#idTablaUser").html("");
+
 	$.ajax({
 		url: strUrl,
 		method: "POST",
@@ -194,13 +198,15 @@ function LlenarGrilla() {
 
 			if (oRta.success == true) {
 				$("#tabla").html(oRta.tabla);
-				//TRADUCCION DE LA GRILLA DE MAESTRO SECTOR!!!
 
+				// Llama a .DataTable() aquí una sola vez.
 				$("#idTablaUser").DataTable({
+					dom: "Bfrtip",
+					buttons: ["copy", "csv", "excel", "pdf", "print"],
 					language: {
 						lengthMenu: "Mostrando _MENU_ registros por página",
 						zeroRecords: "Nada para Mostrar",
-						info: "Mostrando Pagina _PAGE_ de _PAGES_",
+						info: "Mostrando Página _PAGE_ de _PAGES_",
 						infoEmpty: "No hay registros disponibles",
 						search: "Buscar",
 						paginate: {
@@ -218,6 +224,7 @@ function LlenarGrilla() {
 		}
 	});
 }
+
 function SocioNuevo() {
 	$("#id").val("0");
 	$("#documento").val("");

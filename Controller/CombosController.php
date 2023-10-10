@@ -33,10 +33,18 @@ class CombosController{
       return $this->mp->ComboSocios($tabIndex );
 
     }
+
     public function ComboSociosAbm($tabIndex,$idCombo ){
       return $this->mp->comboSociosAbm($tabIndex,$idCombo );
       $this->mp = null;
     }
+
+    public function comboRecibosConSaldo($tabIndex,$idCombo, int $socioId ){
+      return $this->mp->comboRecibosConSaldo($tabIndex,$idCombo , $socioId);
+      $this->mp = null;
+    }
+
+
     public function socios_impresion($tabIndex,$idCombo ){
         return $this->mp->socios_impresion($tabIndex,$idCombo );
 
@@ -60,7 +68,10 @@ if(isset($_POST["idCombo"])):
 else:
     return;
 endif;
-
+$socioID = 0 ;
+if(isset($_POST["socioID"])):
+    $socioID = $_POST["socioID"];
+endif;
 
 $respuesta = '';
 if ($combo=='localidades'){$respuesta = comboLocalidades($tabIndex);}
@@ -69,6 +80,11 @@ if ($combo=='provincias'){$respuesta = comboProvincias($tabIndex);}
 if ($combo=='tipoSocio'){$respuesta = combotipoSocio($tabIndex);}
 if ($combo=='Socios'){$respuesta = comboSocios($tabIndex);}
 if ($combo=='socios_abm'){$respuesta = comboSociosAbm($tabIndex,$idCombo);}
+if ($combo=='socios_abmRecibos'){$respuesta = comboSociosAbm($tabIndex,$idCombo);}
+if ($combo=='recibosConSaldo'){$respuesta = comboRecibosConSaldo($tabIndex,$idCombo,$socioID);}
+
+
+
 if ($combo=='socios_impresion'){$respuesta = socios_impresion($tabIndex,$idCombo);}
 
 echo$respuesta ;
@@ -97,7 +113,17 @@ function comboSociosAbm($tabIndex,$idCombo ){
     $respuesta = new CombosController();
     return $respuesta->comboSociosAbm($tabIndex,$idCombo );
 }
+function comboSociosAbmRecibos($tabIndex,$idCombo ){
+    $respuesta = new CombosController();
+    return $respuesta->comboSociosAbm($tabIndex,$idCombo );
+}
+
 function socios_impresion($tabIndex,$idCombo ){
     $respuesta = new CombosController();
     return $respuesta->socios_impresion($tabIndex,$idCombo );
+}
+
+function comboRecibosConSaldo($tabIndex,$idCombo, int $socioID ){
+    $respuesta = new CombosController();
+    return $respuesta->comboRecibosConSaldo($tabIndex,$idCombo , $socioID);
 }

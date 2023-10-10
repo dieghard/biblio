@@ -23,7 +23,7 @@ tr.pagado {
 
 /* Estilos para el texto */
 .icono-con-texto {
-  font-size: 16px;
+  font-size: 12px;
   /* Tamaño del texto */
 }
 
@@ -64,6 +64,7 @@ tr.pagado {
 <!-- Modal -->
 <?php include 'components/emisionreciobos/modalEmisionRecibos.php';?>
 <?php include 'components/emisionreciobos/modalEmisionRecibosMonto.php';?>
+<?php include 'components/emisionreciobos/modalPagos.php';?>
 
 <!-- Modal Impresion -->
 <?php include 'components/emisionreciobos/modalImpresionRecibos.php';?>

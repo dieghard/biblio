@@ -29,8 +29,12 @@ class EmisionDeRecibosController
        return  $this->MP->IngresoEmisionPagos($bibliotecaID, $misDatosJSON);
 
     }
-}
 
+    public function eliminarRecibo($bibliotecaID, $misDatosJSON){
+        return  $this->MP->elminarMovimientos($bibliotecaID, $misDatosJSON);
+
+    }
+}
 function LlenarGrilla()
 {
     $respuesta = new EmisionDeRecibosController();
@@ -44,7 +48,7 @@ function LlenarGrilla()
     $data['anioDesde'] = $_POST['anioDesde'];
     $data['mesHasta'] = $_POST['mesHasta'];
     $data['anioHasta'] = $_POST['anioHasta'];
-
+    $data['saldoFiltro'] = $_POST['saldoFiltro'];
     return $respuesta->llenarGrilla($bibliotecaID,$data);
 }
 
@@ -64,7 +68,7 @@ function IngresoEmisionRecibos()
 }
 
 function ingresoEmisionPagos()
-  {
+{
       $respuesta = new EmisionDeRecibosController();
 
       if (session_status() == PHP_SESSION_NONE) {
@@ -76,7 +80,7 @@ function ingresoEmisionPagos()
       $misDatosJSON = json_decode($_POST['datosjson']);
 
       return $respuesta->ingresoEmisionPagos($bibliotecaID, $misDatosJSON);
-  }
+}
 
   $respuesta = '';
 
@@ -96,5 +100,18 @@ function ingresoEmisionPagos()
   if ($accion == 'ingresoPago') :
       $respuesta = ingresoEmisionPagos();
   endif;
+  if ($accion == 'eliminarMovimiento') :
+    $respuesta = new EmisionDeRecibosController();
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
+    $biblioteca = $_SESSION['biblioteca'];
+    $bibliotecaID = $biblioteca['id'];
+    $misDatosJSON = json_decode($_POST['datosjson']);
+    $respuesta =  $respuesta->eliminarRecibo($bibliotecaID, $misDatosJSON);
+
+  endif;
+
+
 
   echo $respuesta;
