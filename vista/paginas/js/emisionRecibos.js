@@ -11,6 +11,18 @@ function generarColorAleatorio() {
 }
 
 $(document).ready(function () {
+	// Agrega un controlador de clic para las filas de datos de socios
+	$(".main-table").on("click", "tr[data-socio]", function () {
+		// Encuentra la fila de subtabla correspondiente
+		var subtablaRow = $(this).next(".subtabla-row");
+
+		// Muestra u oculta la subtabla al hacer clic en la fila de datos del socio
+		if (subtablaRow.is(":visible")) {
+			subtablaRow.hide();
+		} else {
+			subtablaRow.show();
+		}
+	});
 	// Genera un color hexadecimal aleatorio
 
 	// Aplica el color aleatorio a la variable CSS
@@ -235,7 +247,7 @@ function LlenarGrilla() {
 	$("#tabla").html(
 		'<div class="loading"><h7>Aguarde Un momento, por favor...</h7><img src="../vista/images/save.gif"  width="50" height="50" alt="loading"/></div>'
 	);
-	$("#idTablaUser").html("");
+	$("#tabla").html("");
 	$.ajax({
 		url: strUrl,
 		method: "POST",
@@ -244,18 +256,16 @@ function LlenarGrilla() {
 		contentType: false,
 		processData: false,
 		success: function (respuesta) {
-			console.log(respuesta);
 			const oRta = JSON.parse(respuesta);
-			console.log(oRta);
 			if (oRta.success == true) {
 				$("#tabla").html(oRta.tabla);
 				$("#idTablaUser").DataTable({
 					responsive: true,
 					dom: "Bfrtip",
-					buttons: ["excel"],
+					buttons: ["copy", "csv", "excel", "pdf", "print"],
 					order: [[1, "asc"]],
 					rowGroup: {
-						dataSrc: 1
+						dataSrc: "socio" // Esta es la columna por la que agruparemos
 					},
 					language: {
 						lengthMenu: "Mostrando _MENU_ registros por página",
@@ -271,6 +281,17 @@ function LlenarGrilla() {
 						},
 						infoFiltered: "(Filtrado de _MAX_ total registros),"
 					}
+				});
+
+				$("#idTablaUser").on("order.dt", function () {
+					// Recorre todas las filas de datos y reorganiza las subtablas
+					var filasDeDatos = $("#idTablaUser tbody tr[data-socio]");
+					filasDeDatos.each(function () {
+						var socio = $(this).data("socio");
+						var subtabla = $(this).next("tr").find(".subtabla");
+						// Mueve la subtabla debajo de la fila de datos correspondiente al socio
+						$(this).after(subtabla);
+					});
 				});
 			} else {
 				$("#cartel").html(oRta.mensaje);

@@ -8,7 +8,7 @@ class SectorController
     private $model;
     public function __construct()
     {
-      $model = new SectorModel();
+      $this->model = new SectorModel();
     }
 
     public function eliminarSector($bibliotecaID, $data)
@@ -41,17 +41,18 @@ $bibliotecaID = $biblioteca['id'];
 $ajaxSector = new  SectorController();
 $respuesta ='';
 if (isset($_POST['ACTION'])) {
-    $misDatosJSON = json_decode($_POST['datosjson']);
-    if ($_POST['ACTION'] == 'llenarGrilla') {
-        $respuesta = $ajaxSector->llenarGrilla($bibliotecaID);
-      }
-      if ($_POST['ACTION'] == 'eliminarSector') {
+
+  if ($_POST['ACTION'] == 'llenarGrilla') {
+    $respuesta = $ajaxSector->llenarGrilla($bibliotecaID);
+  }elseif ($_POST['ACTION'] == 'eliminarSector') {
+        $misDatosJSON = json_decode($_POST['datosjson']);
         $respuesta = $ajaxSector->eliminarSector($bibliotecaID, $misDatosJSON);
-      }
-      if ($_POST['ACTION'] == 'ingresarActualizarSector') {
-        $respuesta = $ajaxSector->ingresarActualizarSector($bibliotecaID, $misDatosJSON);
-      }
-      echo $respuesta;
-} else {
+    }elseif ($_POST['ACTION'] == 'ingresarActualizarSector') {
+      $misDatosJSON = json_decode($_POST['datosjson']);
+      $respuesta = $ajaxSector->ingresarActualizarSector($bibliotecaID, $misDatosJSON);
+    }
+  } else {
     //  var_dump($_POST);
-}
+  }
+
+  echo $respuesta;

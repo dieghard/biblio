@@ -10,7 +10,7 @@ class CostoCuotaController
     public function __construct()
     {
 
-      $model= new CostoCuotaModel();
+      $this->model= new CostoCuotaModel();
     }
 
     public function eliminarCostoCuota($bibliotecaID, $data)

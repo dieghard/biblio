@@ -40,6 +40,17 @@ tr.pagado {
   /* Color de fondo de respaldo si no se generó un color aleatorio */
 }
 
+/* Oculta las filas de subtablas y su contenido */
+.subtabla-row {
+  display: none;
+}
+
+/* Define estilos para las subtablas */
+.subtable {
+  width: 100%;
+  /* Ajusta los estilos según tus necesidades */
+}
+
 </style>
 
 <div class="row">

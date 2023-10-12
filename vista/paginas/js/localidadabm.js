@@ -28,7 +28,7 @@ $(document).ready(function () {
 });
 
 function LlenarGrilla() {
-	var strUrl = "../Controller/controladorLocalidad.php";
+	var strUrl = "../Controller/LocalidadController.php";
 
 	var datos = new FormData();
 	datos.append("ACTION", "llenarGrilla");
@@ -166,6 +166,7 @@ function GuardarDatos(Localidad) {
 
 	////LO PASO CON FORM DATA
 	var strUrl = "../Controller/LocalidadController.php";
+
 	$.ajax({
 		url: strUrl,
 		method: "POST",

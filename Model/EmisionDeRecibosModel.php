@@ -123,7 +123,8 @@ class EmisionDeRecibosModel
     if ($row['reciboCobro'] == 'recibo') {
       $icono = '<span class="material-icons">receipt</span>';
     }
-    $tableRow = '<td colspan="2" style="font-size: 12px;" >'.$row['socio'].'-Periodo:'.$row['periodoMes'].'- '.$row['periodoAnio'].'</td>';
+    $tableRow = '<td style="font-size: 12px;" >'.$row['socio'].'</td>';
+    $tableRow .= '<td>'. $row['periodoMes'] .'/' . $row['periodoAnio'] . '</td>';#Numero de comprobante#
     $tableRow .= '<td>' . $row['id'] . '</td>';#Numero de comprobante#
     $tableRow .= '<td>' . $icono . $row['reciboCobro'] . '</td>';
     $tableRow .= '<td>'.$row['fecha'].'</td>';
@@ -145,6 +146,24 @@ class EmisionDeRecibosModel
     }
     $tableRow .= '<td><button type="button" class="btn btn-danger" onclick="eliminarMovimiento(this);">Eliminar</button></td>';
     $tableRow .= '</tr>'; //nueva fila
+// // Agrega la subtabla anidada aquí
+// $tableRow .= '<tr class="subtableRow-row">';
+// $tableRow .= '<td colspan="12" class="subtableRow">';
+// $tableRow .= '<table class="subtable">';
+// $tableRow .= '<tr>';
+// $tableRow .= '<th>Columna 1</th>';
+// $tableRow .= '<th>Columna 2</th>';
+// // Añade más columnas si es necesario
+// $tableRow .= '</tr>';
+// $tableRow .= '<tr>';
+// $tableRow .= '<td>Dato 1</td>';
+// $tableRow .= '<td>Dato 2</td>';
+// // Añade más datos de subtableRow
+// $tableRow .= '</tr>';
+// $tableRow .= '</table>';
+// $tableRow .= '</td>';
+// $tableRow .= '</tr>';
+
     return  $tableRow;
   }
 
@@ -193,15 +212,9 @@ class EmisionDeRecibosModel
                       // Si cambió, crea una nueva fila de encabezado
                        if (!empty($socioAnterior) || $socioAnterior === null) {
                          if ($socioAnterior === null) {
-                            // Trata el primer socio
-                            $tabla .= '<tr class="agrupado" style="background-color: lightgray; font-size: 13px;">';
-                            $tabla .= '<td colspan="11">SOCIO: ' . $socioAnterior . '</td>';
-                            $tabla .= '</tr>';
+
                         } else {
                             $saldoAgrupado = $debeAgrupado -  $haberAgrupado;
-                            $tabla .= '<tr class="agrupado" style="background-color: lightgray; font-size: 13px;">';
-                            $tabla .= '<td colspan="11">SOCIO: ' . $socioAnterior . ' DEBE:$'.$debeAgrupado.' -Haber:$'.$haberAgrupado.' -Saldo:$'.$saldoAgrupado.'</td>';
-                            $tabla .= '</tr>';
                         }
                       }
 
@@ -235,20 +248,20 @@ class EmisionDeRecibosModel
                   $tabla .= $this->row($row,$existePago);
 
                   // Si existe un pago, agregar una nueva fila para mostrar el pago
-                  if ($existePago) :
-                      $tabla .= '<tr class="pagado" style="background-color:green; color:white">';
-                      /*$tabla .= "<td colspan='12'>El COMPROBANTE <span class='material-icons'>receipt</span> {$row['id']}  FUE PAGADO POR EL COMPROBATE  <span class='material-icons'>request_quote</span> {$existePago[0]['PagadoConReciboID']} CON EL MONTO : $" . $existePago[0]['haber'] . "</td>";
-                      */
-                      $tabla .= "<td colspan='12'><span class='icono-con-texto'>El COMPROBANTE Nº<span class='material-icons'>receipt</span> {$row['id']}  FUE PAGADO POR EL COMPROBANTE <span class='material-icons'>request_quote</span> Nº {$existePago[0]['PagadoConReciboID']} CON EL MONTO : $" . $existePago[0]['haber'] ."</span></td>";
-                      $tabla .= '</tr>';
-                  endif;
-                       // Después de procesar todos los datos, verifica si el primer socio necesita un encabezado
-                  if ($primerSocio) :
-                      $saldoAgrupado = $debeAgrupado -  $haberAgrupado;
-                      $tabla .= '<tr class="agrupado" style="background-color: lightgray; font-size: 13px;">';
-                      $tabla .= '<td colspan="11">SOCIO: ' . $socioAnterior . ' DEBE:$'.$debeAgrupado.' -Haber:$'.$haberAgrupado.' -Saldo:$'.$saldoAgrupado.'</td>';
-                      $tabla .= '</tr>';
-                  endif;
+                  // if ($existePago) :
+                  //     $tabla .= '<tr class="pagado" style="background-color:green; color:white">';
+                  //     /*$tabla .= "<td colspan='12'>El COMPROBANTE <span class='material-icons'>receipt</span> {$row['id']}  FUE PAGADO POR EL COMPROBATE  <span class='material-icons'>request_quote</span> {$existePago[0]['PagadoConReciboID']} CON EL MONTO : $" . $existePago[0]['haber'] . "</td>";
+                  //     */
+                  //     $tabla .= "<td colspan='12'><span class='icono-con-texto'>El COMPROBANTE Nº<span class='material-icons'>receipt</span> {$row['id']}  FUE PAGADO POR EL COMPROBANTE <span class='material-icons'>request_quote</span> Nº {$existePago[0]['PagadoConReciboID']} CON EL MONTO : $" . $existePago[0]['haber'] ."</span></td>";
+                  //     $tabla .= '</tr>';
+                  // endif;
+                  //      // Después de procesar todos los datos, verifica si el primer socio necesita un encabezado
+                  // if ($primerSocio) :
+                  //     $saldoAgrupado = $debeAgrupado -  $haberAgrupado;
+                  //     $tabla .= '<tr class="agrupado" style="background-color: lightgray; font-size: 13px;">';
+                  //     $tabla .= '<td colspan="12">SOCIO: ' . $socioAnterior . ' DEBE:$'.$debeAgrupado.' -Haber:$'.$haberAgrupado.' -Saldo:$'.$saldoAgrupado.'</td>';
+                  //     $tabla .= '</tr>';
+                  // endif;
                 endforeach;
 
             endif;
