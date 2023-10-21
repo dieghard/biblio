@@ -47,7 +47,7 @@
         <div class="col-md-3 col-sm-12">
           <span class="badge badge-light pr-5 m-1">Filtrar por Recibos o Pagos:
             <select id="recibos_pagos" name="recibos_pagos">
-              <option value="recibos_pagos" selected>todos</option>
+              <option value="todos" selected>todos</option>
               <option value="recibos">recibos</option>
               <option value="pagos">pagos</option>
             </select>

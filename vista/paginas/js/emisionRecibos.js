@@ -232,7 +232,7 @@ function LlenarGrilla() {
 	const mesHasta = $("#mesHastaFiltro").val();
 	const anioHasta = $("#anioHastaFiltro").val();
 	const saldoFiltro = document.getElementById("saldoFiltro").value;
-
+	const recibos_pagos = $("#recibos_pagos").val();
 	const strUrl = "../Controller/EmisionDeRecibosController.php";
 	const datos = new FormData();
 
@@ -242,7 +242,8 @@ function LlenarGrilla() {
 	datos.append("mesHasta", mesHasta);
 	datos.append("anioHasta", anioHasta);
 	datos.append("saldoFiltro", saldoFiltro);
-	console.log("saldoFiltro:" + saldoFiltro);
+	datos.append("recibos_pagos", recibos_pagos);
+	console.log("recibos_pagos: " + recibos_pagos);
 	datos.append("ACTION", "llenarGrilla");
 	$("#tabla").html(
 		'<div class="loading"><h7>Aguarde Un momento, por favor...</h7><img src="../vista/images/save.gif"  width="50" height="50" alt="loading"/></div>'
@@ -256,6 +257,7 @@ function LlenarGrilla() {
 		contentType: false,
 		processData: false,
 		success: function (respuesta) {
+			console.log(respuesta);
 			const oRta = JSON.parse(respuesta);
 			if (oRta.success == true) {
 				$("#tabla").html(oRta.tabla);

@@ -18,45 +18,35 @@ if ($action=='impresionRecibos'){
     $sectorImpresion  = $_GET['sectorImpresion'];
 }
 
-$strSql = "SELECT mov.id,
-		        IFNULL(S.apellidoyNombre,'') as socio,
-                IFNULL(S.numeroSocio,'') as numeroSocio,
-                IFNULL(tS.descripcion,'') as tipoSocio ,
-                IFNULL(mov.ReciboCobro,'') as reciboCobro,
-                IFNULL(S.domicilio,'') as domicilio,
-                IFNULL(se.descripcion,'') as sector,
-		        IFNULL(mov.NumeroReciboPagado,'') as reciboPagado,
-                mov.fecha,
-                mov.periodoMes,
-                mov.periodoAnio,
-                mov.socioId,
-                mov.debe,
-                mov.haber,
-            IFNULL(mov.debe,0) -  IFNULL((SELECT haber FROM movimientos WHERE  NumeroReciboPagado = mov.id  AND Eliminado !='SI'),0)  AS saldo
+$strSql = "SELECT mov.id, IFNULL(S.apellidoyNombre,'') as socio, IFNULL(S.numeroSocio,'') as numeroSocio,
+                IFNULL(tS.descripcion,'') as tipoSocio ,IFNULL(mov.ReciboCobro,'') as reciboCobro,IFNULL(S.domicilio,'') as domicilio,IFNULL(se.descripcion,'') as sector,IFNULL(mov.NumeroReciboPagado,'') as reciboPagado,mov.fecha,mov.periodoMes,mov.periodoAnio,mov.socioId,mov.debe,mov.haber,
+                SUM(IFNULL(mov.debe,0) -  IFNULL((SELECT haber FROM movimientos WHERE  NumeroReciboPagado = mov.id  AND Eliminado !='SI'),0)) AS saldo
             FROM movimientos mov
             INNER join socios S on S.id = mov.socioId
             INNER join tiposocio tS on tS.id = S.tipoSocioId
             INNER join sector se on se.id = S.sectorid
             WHERE IFNULL(mov.Eliminado,'NO')='NO'
-            AND ReciboCobro = 'recibo'
-            AND mov.id not in(select NumeroReciboPagado FROM movimientos where ReciboCobro='cobro')";
-
-        if ($socioID>0){
-            $strSql .= " AND S.id=" .$socioID;
-        }
-        if ($mesImpresion>0) {
-            $strSql .= " AND mov.periodoMes=" .$mesImpresion;
-        }
-        if ($anioImpresion>0) {
-            $strSql .= " AND mov.periodoAnio={$anioImpresion}";
-        }
-    if (strlen($numeroRecibo)>0) {
-            $strSql .= " AND mov.id IN({$numeroRecibo}) ";
-        }
-        if ($sectorImpresion>0) {
-            $strSql .= " AND S.sectorid=" .$sectorImpresion;
-        }
-    // Agrega la condición para filtrar los registros con saldo mayor que 0
+            AND ReciboCobro = 'recibo'";
+      if ($socioID>0):
+          $strSql .= " AND mov.socioId =" .$socioID;
+      endif;
+      if ($mesImpresion>0) :
+        $strSql .= " AND mov.periodoMes=" .$mesImpresion;
+      endif;
+      if ($anioImpresion>0) :
+        $strSql .= " AND mov.periodoAnio={$anioImpresion}";
+      endif;
+      if (strlen($numeroRecibo)>0) :
+        $strSql .= " AND mov.id IN({$numeroRecibo}) ";
+      endif;
+      if ($sectorImpresion == "undefined"):
+        $sectorImpresion = 0;
+      endif;
+      if ($sectorImpresion>0) :
+        $strSql .= " AND S.sectorid=" .$sectorImpresion;
+      endif;
+      // Agrega la condición para filtrar los registros con saldo mayor que 0
+      $strSql .= " HAVING saldo > 0 " ;
     //echo    ($strSql);
     $coneccion = new Conexion();
     $dbConectado = $coneccion->DBConect();
@@ -91,9 +81,9 @@ try {
               $data['tipoSocio']=$row['tipoSocio'];
               $data['domicilio']=$row['domicilio'];
               $data['sector']=$row['sector'];
-              $data['saldoAnterior']=$row['saldo'];
+              $data['saldoAnterior']="$".$row['saldo'];
               $data['periodo']=$row['periodoMes'] . '/' . $row['periodoAnio'] ;
-              $data['saldoActual']=$row['debe'];
+              $data['saldoActual']="$".$row['debe'];
               $data['fecha']=$row['fecha'];
               $data['numeroRecibo']=$row['id'];
               //impresion
@@ -161,7 +151,7 @@ function crear_Recibo($pdf, $lineaX, $lineaY,$data){
 
     $lineaY = $lineaY + 4;
     $pdf->SetXY($lineaX, $lineaY);
-    $pdf->Cell(50, 5,iconv("UTF-8", "ISO-8859-1//TRANSLIT",'Saldo Anterior:' . $data['saldoAnterior']), 0, 0, 'L');
+    $pdf->Cell(50, 5,iconv("UTF-8", "ISO-8859-1//TRANSLIT",'Saldo Total:' . $data['saldoAnterior']), 0, 0, 'L');
 
     $lineaY = $lineaY + 4;
     $pdf->SetXY($lineaX, $lineaY);

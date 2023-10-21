@@ -49,6 +49,7 @@ function LlenarGrilla()
     $data['mesHasta'] = $_POST['mesHasta'];
     $data['anioHasta'] = $_POST['anioHasta'];
     $data['saldoFiltro'] = $_POST['saldoFiltro'];
+    $data['recibos_pagos'] = $_POST['recibos_pagos'];
     return $respuesta->llenarGrilla($bibliotecaID,$data);
 }
 

@@ -2,7 +2,9 @@
   //  header("Content-type: application/json; charset=utf-8");
 namespace Model;
 require_once 'conexion.php';
+require_once 'tablaMovimientos.php';
 use Model\conexion;
+use Model\tablaMovimientos;
 use Exception;
 use PDO;
 use PDOException;
@@ -11,44 +13,59 @@ class EmisionDeRecibosModel
 {
 
   private function armarSqlSelect($data){
-    $sql = "SELECT mov.id
-                ,S.apellidoyNombre as socio
-                ,mov.ReciboCobro as reciboCobro
-                ,IFNULL(mov.NumeroReciboPagado,0) as reciboPagado
-                ,mov.fecha
-                ,mov.periodoMes
-                ,mov.periodoAnio
-                ,mov.socioId
-                ,IFNULL(mov.debe,0) as debe
-                ,CASE
-				         WHEN mov.ReciboCobro ='recibo' THEN
-            			 IFNULL((SELECT sum(haber) FROM movimientos WHERE  NumeroReciboPagado = mov.id  AND Eliminado != 'SI' LIMIT 1), 0)
-				         ELSE
-            				 IFNULL(mov.haber, 0)
-					     END AS haber
-                ,IFNULL(mov.debe,0) -  IFNULL((SELECT haber FROM movimientos WHERE  NumeroReciboPagado = mov.id  AND Eliminado !='SI'),IFNULL(mov.haber,0))  AS saldo
-                ,mov.Observaciones
-                ,IFNULL(mov.IdPago,0) as IdPago
-                , mov.Eliminado AS reciboEliminado
-      FROM movimientos mov
-      INNER JOIN socios S on S.id = mov.socioId
-		  WHERE 1= 1
-		  AND IFNULL(mov.Eliminado,'NO') != 'SI'";
+    $sql = "SELECT
+              mov.id
+            ,  S.apellidoyNombre
+            ,  mov.ReciboCobro
+            ,  IFNULL(mov.NumeroReciboPagado, 0)
+            ,  mov.fecha
+            ,  mov.periodoMes
+            ,  mov.periodoAnio
+            ,  mov.socioId
+            , IFNULL(mov.debe, 0) AS debe
+            , IFNULL(mov.haber, 0) AS haber
+            , IFNULL((SELECT SUM(haber)
+                      FROM movimientos
+                      WHERE socioId = mov.socioId
+                      AND NumeroReciboPagado = mov.Id
+                      AND IFNULL(eliminado,'NO') ='NO' ),0) as  Pago
+            , IFNULL(mov.debe,0) - IFNULL((SELECT SUM(haber)
+                                          FROM movimientos
+                                          WHERE socioId = mov.socioId
+                                          AND NumeroReciboPagado = mov.Id
+                                          AND IFNULL(eliminado,'NO') ='NO'  ),0) as  Total
+            ,mov.Observaciones
+            ,IFNULL(mov.IdPago, 0) AS IdPago
+            ,  mov.Eliminado AS reciboEliminado
+            FROM movimientos mov
+            INNER JOIN socios S ON S.id = mov.socioId
+            WHERE 1 = 1
+
+      AND IFNULL(mov.Eliminado,'NO') != 'SI'";
       if  ($data['socioID'] >0){ $sql .= "  AND mov.SocioId=".$data['socioID'];}
       if  ($data['mesDesde']>0){$sql .= "  AND mov.periodoMes>=".$data['mesDesde'];}
       if  ($data['anioDesde']>0){$sql .= "  AND mov.periodoAnio>=".$data['anioDesde'];}
       if  ($data['mesHasta']>0){$sql .= "  AND mov.periodoMes<=".$data['mesHasta'];}
       if  ($data['anioHasta']>0){$sql .= "  AND mov.periodoAnio<=".$data['anioHasta'];}
-      $sql .= '    AND  mov.bibliotecaId=:bibliotecaID';
-      if($data['saldoFiltro'] == 'todos'):
 
+      if ( $data['recibos_pagos']=='todos'):
+
+        elseif( $data['recibos_pagos']=='recibos'):
+        $sql .= "  AND mov.ReciboCobro='recibo'   ";
+      elseif( $data['recibos_pagos']=='pagos'):
+        $sql .= "  AND mov.ReciboCobro='PAGO'";
+      endif;
+
+      $sql .= '    AND  mov.bibliotecaId=:bibliotecaID';
+
+      if($data['saldoFiltro'] == 'todos'):
         $sql .= " ";
 
       elseif($data['saldoFiltro'] == 'sin'):
-        $sql .= "		HAVING saldo = 0 ";
+        $sql .= "		HAVING Total < 0 ";
 
         elseif($data['saldoFiltro'] == 'con'):
-        $sql .= "		HAVING saldo <> 0 ";
+        $sql .= "		HAVING Total > 0 ";
 
       endif;
 
@@ -67,104 +84,86 @@ class EmisionDeRecibosModel
   }
 
 
-  private function encabezadoRow($row, $existePago, $coloresPorSocio){
+  private function encabezadoRow($row,  $coloresPorSocio){
     $encabezadoRow = '<tr id="movimientoid-'.$row['id'].'"';
-    $encabezadoRow .= 'data-id="'.$row['id'].'"';
-    $encabezadoRow .= 'data-socioId="'.$row['socioId'].'"';
-    $encabezadoRow .= 'data-socio="'.$row['socio'].'"';
-    $encabezadoRow .= 'data-fecha="'.$row['fecha'].'"';
-    $encabezadoRow .= 'data-periodoMes="'.$row['periodoMes'].'"';
-    $encabezadoRow .= 'data-periodoanio="'.$row['periodoAnio'].'"';
-    $encabezadoRow .= 'data-reciboPagado="'.$row['reciboPagado'].'"';
-    $encabezadoRow .= 'data-reciboCobro="'.$row['reciboCobro'].'"';
-    $encabezadoRow .= 'data-IdPago="'.$row['IdPago'].'"';
-    $encabezadoRow .= 'data-debe="'.$row['debe'].'"';
-    $encabezadoRow .= 'data-haber="'.$row['haber'].'"';
-    $encabezadoRow .= 'data-saldo="'.$row['saldo'].'"';
+    $encabezadoRow .= ' data-id="'.$row['id'].'"';
+    $encabezadoRow .= ' data-socioId="'.$row['socioId'].'"';
+    $encabezadoRow .= ' data-socio="'.$row['apellidoyNombre'].'"';
+    $encabezadoRow .= ' data-fecha="'.$row['fecha'].'"';
+    $encabezadoRow .= ' data-periodoMes="'.$row['periodoMes'].'"';
+    $encabezadoRow .= ' data-periodoanio="'.$row['periodoAnio'].'"';
 
-      if ($existePago) {
-        $encabezadoRow .= 'data-pago-existente="true"'; // Indicar que ya existe un pago
+    $encabezadoRow .= ' data-IdPago="'.$row['IdPago'].'"';
+    $encabezadoRow .= ' data-debe="'.$row['debe'].'"';
+    $encabezadoRow .= ' data-haber="'.$row['haber'].'"';
+
+
+      if ($row['IdPago']) {
+        $encabezadoRow .= ' data-pago-existente="true"'; // Indicar que ya existe un pago
     } else {
-      $encabezadoRow .= 'data-pago-existente="false"'; // Indicar que no existe un pago
+      $encabezadoRow .= ' data-pago-existente="false"'; // Indicar que no existe un pago
     }
 
-    $colorSocio = $coloresPorSocio[$row['socio']]['fondo']; // Obtén el color de fondo para este socio
-    $colorTexto = $coloresPorSocio[$row['socio']]['texto']; // Obtén el color de texto para este socio
+    $colorSocio = $coloresPorSocio[$row['apellidoyNombre']]['fondo']; // Obtén el color de fondo para este socio
+    $colorTexto = $coloresPorSocio[$row['apellidoyNombre']]['texto']; // Obtén el color de texto para este socio
     $encabezadoRow .= ' style="background-color:' . $colorSocio . '; color:' . $colorTexto . ';"';
 
     $encabezadoRow .= '">';
     return $encabezadoRow;
   }
 
-  private function thead(){
-     return '<div class="table-responsive">
-                    <table class="table table-condensed  table-striped table-bordered" id="idTablaUser">
-                     <thead class="thead-dark">
-                      <tr>
-                          <th scope="col">SOCIO</th>
-                          <th scope="col">PERIODO</th>
-                          <th scope="col">Nº COMPROBANTE</th>
-                          <th scope="col">Rec./Cob.</th>
-                          <th scope="col">FECHA</th>
-                          <th scope="col">Nº RECIBO PAGADO</th>
-                          <th scope="col">DEBE</th>
-                          <th scope="col">HABER</th>
-                          <th scope="col">SALDO</th>
-                          <th scope="col">OBS.</th>
-                          <th scope="col"></th>
-                          <th scope="col"></th>
-                      </tr>
-                  </thead>
-              <tbody>';
-  }
 
-  private function row($row, $existePago){
+  private function row($row){
     $icono = '<span class="material-icons">request_quote</span>';
-    if ($row['reciboCobro'] == 'recibo') {
+    if ($row['ReciboCobro'] == 'recibo') {
       $icono = '<span class="material-icons">receipt</span>';
     }
-    $tableRow = '<td style="font-size: 12px;" >'.$row['socio'].'</td>';
-    $tableRow .= '<td>'. $row['periodoMes'] .'/' . $row['periodoAnio'] . '</td>';#Numero de comprobante#
-    $tableRow .= '<td>' . $row['id'] . '</td>';#Numero de comprobante#
-    $tableRow .= '<td>' . $icono . $row['reciboCobro'] . '</td>';
-    $tableRow .= '<td>'.$row['fecha'].'</td>';
-    $tableRow .= '<td>'.$row['reciboPagado'].'</td>';
-    $tableRow .= '<td>$'.$row['debe'].'</td>';
-    $tableRow .= '<td>$'.$row['haber'].'</td>';
-    $tableRow .= '<td>$'.$row['saldo'].'</td>';
-    $tableRow .= '<td>'.$row['Observaciones'].'</td>';
-    if (!$existePago) {
-      if ($row['reciboPagado'] == "" ||$row['reciboPagado'] == 0 && $row['reciboCobro'] == "recibo" ) {
-      // Agregar el botón de "Pagar" solo si no existe un pago
-        $tableRow .= '<td><button type="button" class="btn btn-success" onclick="realizarPago(this);">Pagar</button></td>';
-      }
-      else{
-        $tableRow .= '<td></td>';
-      }
+    $tableRow = '<td  id="idTdSocio"  style="font-size: 12px;">'.$row['apellidoyNombre'].'</td>';
+    $tableRow .= '<td id="idTdPeriodo">'. $row['periodoMes'] .'/' . $row['periodoAnio'] . '</td>';#Numero de comprobante#
+    $tableRow .= '<td id="idTdNumeroComprobante">' . $row['id'] . '</td>';#Numero de comprobante#
+    $tableRow .= '<td id="idTdReciboCobro">' . $icono . $row['ReciboCobro'] . '</td>';
+    $tableRow .= '<td id="idTdFecha">'.$row['fecha'].'</td>';
+    $tableRow .= '<td id="idTdNumeroReciboPagado">'.$row['IdPago'].'</td>';
+    $tableRow .= '<td id="idTdDebe">$'.$row['debe'].'</td>';
+    $tableRow .= '<td id="idTdHaber">$'.$row['haber'].'</td>';
+    $tableRow .= '<td id="idTdPago">$'.$row['Pago'].'</td>';
+    $tableRow .= '<td id="idTdTotal">$'.$row['Total'].'</td>';
+    $tableRow .= '<td id="idTdSaldo">$'.$this->traerSaldo($row['socioId'], $superArray).'</td>';
+    $tableRow .= '<td id="idTdObs">'.$row['Observaciones'].'</td>';
+
+    if ($row['Total'] > 0  && $row['ReciboCobro'] == "recibo" ) {// Agregar el botón de "Pagar" solo si no existe un pago
+        $tableRow .= '<td id="idTbtnPagar"><button type="button" class="btn btn-success" onclick="realizarPago(this);">Pagar</button></td>';
     }else{
-      $tableRow .= '<td></td>';
+        $tableRow .= '<td></td>';
     }
-    $tableRow .= '<td><button type="button" class="btn btn-danger" onclick="eliminarMovimiento(this);">Eliminar</button></td>';
+
+    $tableRow .= '<td id="idTbtnEliminar"><button type="button" class="btn btn-danger" onclick="eliminarMovimiento(this);">Eliminar</button></td>';
     $tableRow .= '</tr>'; //nueva fila
-// // Agrega la subtabla anidada aquí
-// $tableRow .= '<tr class="subtableRow-row">';
-// $tableRow .= '<td colspan="12" class="subtableRow">';
-// $tableRow .= '<table class="subtable">';
-// $tableRow .= '<tr>';
-// $tableRow .= '<th>Columna 1</th>';
-// $tableRow .= '<th>Columna 2</th>';
-// // Añade más columnas si es necesario
-// $tableRow .= '</tr>';
-// $tableRow .= '<tr>';
-// $tableRow .= '<td>Dato 1</td>';
-// $tableRow .= '<td>Dato 2</td>';
-// // Añade más datos de subtableRow
-// $tableRow .= '</tr>';
-// $tableRow .= '</table>';
-// $tableRow .= '</td>';
-// $tableRow .= '</tr>';
 
     return  $tableRow;
+  }
+
+  private function traerSaldo(int $socioID,  &$superArray){
+    $Coneccion = new Conexion();
+    $dbConectado = $Coneccion->DBConect();
+
+    $superArray['success'] = true;
+    $superArray['mensaje'] = '';
+    $strSql = 'SELECT SUM(IFNULL(debe,0) - IFNULL(haber,0)) saldo FROM movimientos WHERE socioId =:socioId' ;
+    $saldo = 0 ;
+    try {
+          $stmt = $dbConectado->prepare($strSql);
+          $stmt->bindParam(':socioId',  $socioID, PDO::PARAM_INT);
+          $stmt->execute();
+          $registro = $stmt->fetch();
+          $saldo = $registro ? $registro['saldo'] : 0;
+
+      } catch (Exception $e) {
+          $superArray['success'] = false;
+          $trace = $e->getTrace();
+          $superArray['mensaje'] = $e->getMessage().' en '.$e->getFile().' en la linea '.$e->getLine().' llamado desde '.$trace[0]['file'].' on line '.$trace[0]['line'];
+      }
+      return $saldo;
   }
 
   public function LlenarGrilla($bibliotecaID,&$data){
@@ -176,9 +175,8 @@ class EmisionDeRecibosModel
       $superArray['tabla'] = '';
       $bibliotecalID = $bibliotecaID;
 
-      if ($data['socioID'] == 'undefined') :
-        $data['socioID'] = 0 ;
-      endif;
+     $data['socioID'] = $data['socioID'] == "undefined" ? 0 : $data['socioID'] ;
+
 
       $strSql = $this->armarSqlSelect($data);
 
@@ -191,43 +189,17 @@ class EmisionDeRecibosModel
           $stmt->bindParam(':bibliotecaID', $bibliotecalID, PDO::PARAM_INT);
           $stmt->execute();
           $registro = $stmt->fetchAll();
-          $tabla = $this->thead();
+          $tabla = tablaMovimientos::head();
           $coloresPorSocio = array();
           $debeAgrupado = 0;
           $haberAgrupado = 0;
-          $saldoAgrupado = 0 ;
 
           if ($registro) :
-              $socioAnterior = ''; // Variable para realizar el cambio de color por socio
-              $primerSocio = false;
-
-              foreach ($registro  as $row) :
-                // Define la clave de agrupación basada en socio, periodoMes y periodoAnio
-                $claveAgrupacion = $row['socio'];//. '-' . $row['periodoMes'] . '-' . $row['periodoAnio'];
-                 // Comprueba si la clave de agrupación cambió
+            foreach ($registro  as $row) :
                 $debeAgrupado +=  $row['debe'];
                 $haberAgrupado +=  $row['haber'];
 
-                if ($claveAgrupacion !== $socioAnterior) {
-                      // Si cambió, crea una nueva fila de encabezado
-                       if (!empty($socioAnterior) || $socioAnterior === null) {
-                         if ($socioAnterior === null) {
-
-                        } else {
-                            $saldoAgrupado = $debeAgrupado -  $haberAgrupado;
-                        }
-                      }
-
-                      // Actualiza la variable de cambio de color
-                      $socioAnterior = $claveAgrupacion;
-                      $debeAgrupado = 0;
-                      $haberAgrupado = 0;
-                      $saldoAgrupado = 0 ;
-                      $primerSocio = false;
-                }
-
-
-                  if (!array_key_exists($row['socio'], $coloresPorSocio)) :
+                  if (!array_key_exists($row['apellidoyNombre'], $coloresPorSocio)) :
                       // Genera un color hexadecimal aleatorio para cada socio
                       $colorRandom = '#' . dechex(rand(0x000000, 0xFFFFFF));
                       // Verifica si el color es claro u oscuro
@@ -237,31 +209,15 @@ class EmisionDeRecibosModel
                           $colorTexto = 'white'; // Si el fondo es oscuro, el texto es blanco
                       endif;
 
-                      $coloresPorSocio[$row['socio']] = [
+                      $coloresPorSocio[$row['apellidoyNombre']] = [
                           'fondo' => $colorRandom,
                           'texto' => $colorTexto,
                       ];
                   endif;
-                  $existePago = $this->verificarPago($row['id'], $superArray);
 
-                  $tabla .= $this->encabezadoRow($row, $existePago, $coloresPorSocio);
-                  $tabla .= $this->row($row,$existePago);
+                  $tabla .= $this->encabezadoRow($row, $coloresPorSocio);
+                  $tabla .= $this->row($row,);
 
-                  // Si existe un pago, agregar una nueva fila para mostrar el pago
-                  // if ($existePago) :
-                  //     $tabla .= '<tr class="pagado" style="background-color:green; color:white">';
-                  //     /*$tabla .= "<td colspan='12'>El COMPROBANTE <span class='material-icons'>receipt</span> {$row['id']}  FUE PAGADO POR EL COMPROBATE  <span class='material-icons'>request_quote</span> {$existePago[0]['PagadoConReciboID']} CON EL MONTO : $" . $existePago[0]['haber'] . "</td>";
-                  //     */
-                  //     $tabla .= "<td colspan='12'><span class='icono-con-texto'>El COMPROBANTE Nº<span class='material-icons'>receipt</span> {$row['id']}  FUE PAGADO POR EL COMPROBANTE <span class='material-icons'>request_quote</span> Nº {$existePago[0]['PagadoConReciboID']} CON EL MONTO : $" . $existePago[0]['haber'] ."</span></td>";
-                  //     $tabla .= '</tr>';
-                  // endif;
-                  //      // Después de procesar todos los datos, verifica si el primer socio necesita un encabezado
-                  // if ($primerSocio) :
-                  //     $saldoAgrupado = $debeAgrupado -  $haberAgrupado;
-                  //     $tabla .= '<tr class="agrupado" style="background-color: lightgray; font-size: 13px;">';
-                  //     $tabla .= '<td colspan="12">SOCIO: ' . $socioAnterior . ' DEBE:$'.$debeAgrupado.' -Haber:$'.$haberAgrupado.' -Saldo:$'.$saldoAgrupado.'</td>';
-                  //     $tabla .= '</tr>';
-                  // endif;
                 endforeach;
 
             endif;
@@ -278,38 +234,6 @@ class EmisionDeRecibosModel
 
   }
 
-  private function verificarPago(int $reciboID, array &$superArray){
-    $conexion = new Conexion();
-    $pdo = $conexion->DBConect();
-
-    $strSql = '';
-      $strSql =" SELECT
-                Recibos.id,Recibos.ReciboCobro,Recibos.debe
-              , Pagos.id as PagadoConReciboID
-              , Pagos.haber
-              ,Pagos.NumeroReciboPagado
-              , Pagos.saldo
-              FROM
-              movimientos  Recibos
-              INNER JOIN movimientos Pagos on Recibos.id = Pagos.NumeroReciboPagado
-              where Recibos.id =:reciboID
-              AND Recibos.Eliminado!='SI'
-              AND Pagos.Eliminado!='SI'";
-
-      $stmt =  $pdo->prepare($strSql);
-      $stmt->bindParam(':reciboID', $reciboID);
-
-    try {
-        $stmt->execute();
-        $registro = $stmt->fetchAll();
-      } catch (Exception $e) {
-        $superArray['success'] = false;
-        $superArray['mensaje'] = 'Error: '.$e->getMessage();
-        $registro = null;
-      }
-
-    return $registro ;
-  }
 
   private function traerValorCuota(int $socioId){
     $conexion = new Conexion();
