@@ -18,13 +18,26 @@ if ($action=='impresionRecibos'){
     $sectorImpresion  = $_GET['sectorImpresion'];
 }
 
-$strSql = "SELECT mov.id, IFNULL(S.apellidoyNombre,'') as socio, IFNULL(S.numeroSocio,'') as numeroSocio,
-                IFNULL(tS.descripcion,'') as tipoSocio ,IFNULL(mov.ReciboCobro,'') as reciboCobro,IFNULL(S.domicilio,'') as domicilio,IFNULL(se.descripcion,'') as sector,IFNULL(mov.NumeroReciboPagado,'') as reciboPagado,mov.fecha,mov.periodoMes,mov.periodoAnio,mov.socioId,mov.debe,mov.haber,
-                SUM(IFNULL(mov.debe,0) -  IFNULL((SELECT haber FROM movimientos WHERE  NumeroReciboPagado = mov.id  AND Eliminado !='SI'),0)) AS saldo
+$strSql = "SELECT mov.id, IFNULL(S.apellidoyNombre,'') as socio
+            , IFNULL(S.numeroSocio,'') as numeroSocio
+            ,IFNULL(tS.descripcion,'') as tipoSocio
+            ,IFNULL(mov.ReciboCobro,'') as reciboCobro
+            ,IFNULL(S.domicilio,'') as domicilio
+            ,IFNULL(se.descripcion,'') as sector
+            ,IFNULL(mov.NumeroReciboPagado,'') as reciboPagado
+            ,mov.fecha,mov.periodoMes
+            ,mov.periodoAnio
+            ,mov.socioId
+            ,IFNULL(mov.debe,0) as debe
+            ,IFNULL(mov.haber,0) as haber,
+            SUM(IFNULL(mov.debe,0) -  IFNULL((SELECT haber
+                                              FROM movimientos
+                                            WHERE  NumeroReciboPagado = mov.id  AND Eliminado !='SI'),0)) AS saldo
+
             FROM movimientos mov
             INNER join socios S on S.id = mov.socioId
-            INNER join tiposocio tS on tS.id = S.tipoSocioId
-            INNER join sector se on se.id = S.sectorid
+            LEFT join tiposocio tS on tS.id = S.tipoSocioId
+            LEFT join sector se on se.id = S.sectorid
             WHERE IFNULL(mov.Eliminado,'NO')='NO'
             AND ReciboCobro = 'recibo'";
       if ($socioID>0):
@@ -69,7 +82,8 @@ $strSql = "SELECT mov.id, IFNULL(S.apellidoyNombre,'') as socio, IFNULL(S.numero
     $renglonesHaciaAbajo = 8;
     $pdf->AddPage();
     $lineaX = 10;
-try {
+    $superArray = [];
+    try {
     $stmt = $dbConectado->prepare($strSql);
     $stmt->execute();
     $registro = $stmt->fetchAll();
@@ -83,9 +97,10 @@ try {
               $data['sector']=$row['sector'];
               $data['saldoAnterior']="$".$row['saldo'];
               $data['periodo']=$row['periodoMes'] . '/' . $row['periodoAnio'] ;
-              $data['saldoActual']="$".$row['debe'];
+              $data['saldoActual'] = traerSaldo($row['socioId'], $superArray);
               $data['fecha']=$row['fecha'];
               $data['numeroRecibo']=$row['id'];
+
               //impresion
               $lineaY_izquierda = $lineaY_izquierda + $renglonesHaciaAbajo;
               $lineaY_derecha = $lineaY_derecha + $renglonesHaciaAbajo;
@@ -112,6 +127,8 @@ catch (Exception $e) {
 
 $pdf->Output();
 $coneccion = null;
+
+
 
 function crear_Recibo($pdf, $lineaX, $lineaY,$data){
     $pdf->SetXY($lineaX, $lineaY);
@@ -151,7 +168,7 @@ function crear_Recibo($pdf, $lineaX, $lineaY,$data){
 
     $lineaY = $lineaY + 4;
     $pdf->SetXY($lineaX, $lineaY);
-    $pdf->Cell(50, 5,iconv("UTF-8", "ISO-8859-1//TRANSLIT",'Saldo Total:' . $data['saldoAnterior']), 0, 0, 'L');
+    $pdf->Cell(50, 5,iconv("UTF-8", "ISO-8859-1//TRANSLIT",'Cuota:' . $data['saldoAnterior']), 0, 0, 'L');
 
     $lineaY = $lineaY + 4;
     $pdf->SetXY($lineaX, $lineaY);
@@ -159,11 +176,11 @@ function crear_Recibo($pdf, $lineaX, $lineaY,$data){
 
     $lineaY = $lineaY + 4;
     $pdf->SetXY($lineaX, $lineaY);
-    $pdf->Cell(50, 5, iconv("UTF-8", "ISO-8859-1//TRANSLIT",'Saldo Actual:' . $data['saldoActual']), 0, 0, 'L');
+    $pdf->Cell(50, 5, iconv("UTF-8", "ISO-8859-1//TRANSLIT",'Saldo Actual:$' . $data['saldoActual']), 0, 0, 'L');
 
     $lineaY = $lineaY + 4;
     $pdf->SetXY($lineaX, $lineaY);
-    $pdf->Cell(50, 5, iconv("UTF-8", "ISO-8859-1//TRANSLIT",'Recibi Pesos:'), 0, 0, 'L');
+    $pdf->Cell(50, 5, iconv("UTF-8", "ISO-8859-1//TRANSLIT",'Recibi Pesos:$'), 0, 0, 'L');
 
 /*    $lineaY = $lineaY + 4;
     $pdf->SetXY($lineaX, $lineaY);
@@ -182,3 +199,26 @@ function crear_Recibo($pdf, $lineaX, $lineaY,$data){
     $pdf->Cell(50, 5,iconv("UTF-8", "ISO-8859-1//TRANSLIT",'-------------------------------------------------------------------------------------------------------'), 0, 0, 'L');
     return $lineaY;
 }
+
+ function traerSaldo(int $socioID,  &$superArray){
+    $Coneccion = new Conexion();
+    $dbConectado = $Coneccion->DBConect();
+
+    $superArray['success'] = true;
+    $superArray['mensaje'] = '';
+    $strSql = "SELECT SUM(IFNULL(debe,0) - IFNULL(haber,0)) saldo FROM movimientos WHERE socioId =:socioId AND IFNULL(eliminado,'NO')!='SI'" ;
+    $saldo = 0 ;
+    try {
+          $stmt = $dbConectado->prepare($strSql);
+          $stmt->bindParam(':socioId',  $socioID, PDO::PARAM_INT);
+          $stmt->execute();
+          $registro = $stmt->fetch();
+          $saldo = $registro ? $registro['saldo'] : 0;
+
+      } catch (Exception $e) {
+          $superArray['success'] = false;
+          $trace = $e->getTrace();
+          $superArray['mensaje'] = $e->getMessage().' en '.$e->getFile().' en la linea '.$e->getLine().' llamado desde '.$trace[0]['file'].' on line '.$trace[0]['line'];
+      }
+      return $saldo;
+  }

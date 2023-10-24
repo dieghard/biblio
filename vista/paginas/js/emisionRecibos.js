@@ -732,6 +732,7 @@ function realizarPago(btn) {
 	var fechaHoy = new Date().toISOString().slice(0, 10);
 
 	var emision = {
+		id: id,
 		fecha: fechaHoy,
 		periodoMes: periodoMes,
 		periodoAnio: periodoAnio,
@@ -740,7 +741,8 @@ function realizarPago(btn) {
 		haber: debe,
 		observaciones: "",
 		seguir: true,
-		mensaje: ""
+		mensaje: "",
+		botonPagoTotal: true
 	};
 	var titulo =
 		"¿Guardar el pago para el socio:" +
@@ -811,7 +813,8 @@ function eliminarMovimiento(btn) {
 		haber: debe,
 		observaciones: "",
 		seguir: true,
-		mensaje: ""
+		mensaje: "",
+		botonPagoTotal: false
 	};
 	var titulo = `¿Elimianr el ${reciboPago} para el socio: ${socio} para el perdiodo: ${periodoMes}/${periodoAnio}?`;
 	var content = "Eliminar comprobante:" + id + "?";
@@ -883,6 +886,7 @@ function PasarDatosPago() {
 	}
 
 	var emision = {
+		id: 0,
 		fecha: $("#fecha").val(),
 		periodoMes: $("#periodoMes").val(),
 		periodoAnio: $("#periodoAnio").val(),
@@ -891,7 +895,8 @@ function PasarDatosPago() {
 		haber: monto,
 		observaciones: $("#observaciones").val(),
 		seguir: true,
-		mensaje: ""
+		mensaje: "",
+		botonPagoTotal: false
 	};
 	return emision;
 }

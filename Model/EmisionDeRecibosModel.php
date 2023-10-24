@@ -149,7 +149,7 @@ class EmisionDeRecibosModel
 
     $superArray['success'] = true;
     $superArray['mensaje'] = '';
-    $strSql = 'SELECT SUM(IFNULL(debe,0) - IFNULL(haber,0)) saldo FROM movimientos WHERE socioId =:socioId' ;
+    $strSql = "SELECT SUM(IFNULL(debe,0) - IFNULL(haber,0)) saldo FROM movimientos WHERE socioId =:socioId AND IFNULL(eliminado,'NO')!='SI'" ;
     $saldo = 0 ;
     try {
           $stmt = $dbConectado->prepare($strSql);
@@ -381,34 +381,43 @@ class EmisionDeRecibosModel
   }
 
   private function armarSqlInsert_Pagos($bibliotecaID, $data){
+
     $strSql = 'INSERT INTO  MOVIMIENTOS
               (bibliotecaId,ReciboCobro,Fecha,periodoMes,periodoAnio,socioId,haber,observaciones,NumeroReciboPagado,Eliminado)VALUES
               (:bibliotecaId,:ReciboCobro,:Fecha,:periodoMes,:periodoAnio,:socioId,:haber,:observaciones,:NumeroReciboPagado,:Eliminado)';
     return $strSql;
   }
 
-  private function obtenerElUltimoSaldo($bibliotecaID, $data){
+  private function traerTotalAPagar($bibliotecaID, $data){
     $coneccion = new Conexion();
     $dbConectado = $coneccion->DBConect();
-    $strSql = 'SELECT IFNULL(saldo,0) as saldo FROM movimientos WHERE SOCIOId=:socioId';
-    $strSql .= '    AND  bibliotecaId=:bibliotecaID
-                ORDER BY  id DESC
-                LIMIT 1';
+    $strSql = "SELECT IFNULL(IFNULL(mov.debe,0) - IFNULL((SELECT SUM(haber)
+									FROM movimientos
+									WHERE socioID = mov.socioId
+									AND NumeroReciboPagado = mov.id
+									AND eliminado !='SI' ),0),0) AS total
+              FROM movimientos mov
+              WHERE mov.ReciboCobro = 'recibo'
+              AND mov.socioId = :socioId
+              AND  mov.bibliotecaId = :bibliotecaID
+              AND mov.id  = :id
+              LIMIT 1";
     $saldo = 0;
         try {
             $stmt = $dbConectado->prepare($strSql);
             $stmt->bindParam(':bibliotecaID', $bibliotecaID, PDO::PARAM_INT);
             $stmt->bindParam(':socioId', $data->socioId, PDO::PARAM_INT);
+            $stmt->bindParam(':id', $data->id, PDO::PARAM_INT);
             $stmt->execute();
             $registro = $stmt->fetchAll();
 
             if ($registro) {
-                /* obtener los valores */
-                foreach ($registro  as $row) {
-                    $saldo = $row['saldo'];
-                }
+              $primerRegistro = $registro[0];
+              $saldo = $primerRegistro["total"];
+
             }
         } catch (Exception $e) {
+          $saldo = 0;
             $superArray['success'] = false;
             $trace = $e->getTrace();
             $superArray['mensaje'] = $e->getMessage().' en '.$e->getFile().' en la linea '.$e->getLine().' llamado desde '.$trace[0]['file'].' on line '.$trace[0]['line'];
@@ -431,6 +440,12 @@ class EmisionDeRecibosModel
     $dbConectado->beginTransaction();
     $reciboCobro = 'PAGO';
     $eliminado = 'NO';
+    $traerTotal = 0;
+    if (isset($data->botonPagoTotal)):
+      $traerTotal = $this->traerTotalAPagar($bibliotecaID, $data);
+    else:
+      $traerTotal = $data->haber;
+    endif;
     try {
         $stmt = $dbConectado->prepare($strSql);
         $stmt->bindParam(':bibliotecaId', $bibliotecaID, PDO::PARAM_INT);
@@ -439,7 +454,7 @@ class EmisionDeRecibosModel
         $stmt->bindParam(':periodoMes', $data->periodoMes, PDO::PARAM_STR);
         $stmt->bindParam(':periodoAnio', $data->periodoAnio, PDO::PARAM_INT);
         $stmt->bindParam(':socioId', $data->socioId, PDO::PARAM_INT);
-        $stmt->bindParam(':haber', $data->haber);
+        $stmt->bindParam(':haber', $traerTotal);
         $stmt->bindParam(':observaciones', $data->observaciones);
         $stmt->bindParam(':NumeroReciboPagado', $data->numeroReciboPagado);
         $stmt->bindParam(':Eliminado', $eliminado);
