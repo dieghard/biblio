@@ -1,3 +1,59 @@
+<style>
+.modal-content {
+  background-color: #f9f9f9;
+  font-family: Arial, sans-serif;
+}
+
+.modal-header {
+  border-bottom: 1px solid #ddd;
+}
+
+.modal-title {
+  color: #333;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.input-group-text {
+  color: #555;
+}
+
+.btn {
+  margin-right: 10px;
+}
+
+.btn:hover {
+  opacity: 0.8;
+}
+
+#btnGuardar {
+  background-color: #5cb85c;
+  border-color: #4cae4c;
+}
+
+#btnCerrarAbajo {
+  background-color: #f0ad4e;
+  border-color: #eea236;
+}
+
+.modal {
+  transition: all 0.3s ease-out;
+  transform: translateY(-100%);
+  opacity: 0;
+  display: none;
+  /* Oculta el modal por defecto */
+}
+
+.modal.show {
+  transform: translateY(0);
+  opacity: 1;
+  display: block;
+  /* Muestra el modal cuando se añade la clase .show */
+}
+
+</style>
 <div class="modal" id="modalEmisionRecibosAbm">
   <div class="modal-dialog">
     <!-- Modal content-->

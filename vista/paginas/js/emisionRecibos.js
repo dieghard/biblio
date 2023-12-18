@@ -55,8 +55,6 @@ $(document).ready(function () {
 	$("#btnCerrarAbajo").on("click", function () {});
 	$("#btnCerrarAbajoMonto").on("click", function () {});
 
-	$("#botonOcultar").trigger("click");
-
 	$("#btnGuardar").click(function () {
 		Guardar_Datos();
 	});

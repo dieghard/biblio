@@ -441,7 +441,7 @@ class EmisionDeRecibosModel
     $reciboCobro = 'PAGO';
     $eliminado = 'NO';
     $traerTotal = 0;
-    if (isset($data->botonPagoTotal)):
+    if (isset($data->botonPagoTotal) && $data->botonPagoTotal ):
       $traerTotal = $this->traerTotalAPagar($bibliotecaID, $data);
     else:
       $traerTotal = $data->haber;
